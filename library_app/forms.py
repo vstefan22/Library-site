@@ -1,6 +1,8 @@
 from django.forms import ImageField
 from django import forms
 from django.forms import ModelForm
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 from . import models
 
 class AddBook(ModelForm):
@@ -18,3 +20,17 @@ class AddBook(ModelForm):
             'started_reading':forms.DateInput(attrs={'placeholder': 'e.g. 2022-06-01'}),
             'finished_reading':forms.DateInput(attrs={'placeholder': 'e.g. 2022-08-21'})
         }
+
+
+class UserRegisterForm(UserCreationForm):
+  email = forms.EmailField()
+
+  class Meta:
+      model = User
+      fields = ['username', 'email', 'first_name', 'last_name']
+
+
+class PersonInfo(ModelForm):
+    class Meta:
+        model = models.Person
+        fields = ['profile_pic', 'description', 'city', 'read_books']

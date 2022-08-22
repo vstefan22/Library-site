@@ -1,10 +1,11 @@
 from django.shortcuts import render
-from django.views.generic import ListView, CreateView, DetailView
-from django.contrib.auth.models import User
+from django.views.generic import ListView, CreateView, DetailView, FormView
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
+from django.contrib.auth import login
+from django.shortcuts import redirect
 from .models import Book, Person
-from .forms import AddBook
+from .forms import AddBook, UserRegisterForm
 
 
 class ListOfBooks(ListView):
@@ -47,7 +48,6 @@ class Profile(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['person_info'] = Person.objects.filter(user = self.request.user)
-        print(context)
         return context
     context_object_name = 'person'
 
@@ -57,6 +57,25 @@ class Login(LoginView):
     redirect_authenticated_user = True
     def get_success_url(self):
         return reverse_lazy('index')
- 
+
+class BookDetail(DetailView):
+    model = Book
+    context_object_name = 'book'
+    template_name = 'library_app/book.html'
+
+class RegisterPage(FormView):
+    template_name = 'library_app/register.html'
+    form_class = UserRegisterForm
+    redirect_authenticated_user = True
+    success_url = reverse_lazy('index')
+
+
+    def form_valid(self, form):
+        user = form.save()
+        if user is not None:
+            login(self.request, user)
+        return super(RegisterPage, self).form_valid(form)
+
+
     
 

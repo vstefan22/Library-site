@@ -11,5 +11,8 @@ urlpatterns = [
     path('profile/', views.Profile.as_view(), name = 'profile'),
     path('logout/', LogoutView.as_view(next_page='login'), name = 'logout'),
     path('login/', views.Login.as_view(), name = 'login'),
+    path('register/', views.RegisterPage.as_view(), name = 'register'),
+
+    path('book/<int:pk>/', views.BookDetail.as_view(), name='book')
 
 ]

@@ -11,6 +11,7 @@
 <body>
     {% extends 'library_app/base.html' %}
     {%block content%}
+    {%if person%}
     {% for info in person%}
     <section class="h-100 gradient-custom-2">
         <div class="container py-5 h-100">
@@ -28,7 +29,7 @@
                                 </button>
                             </div>
                             <div class="ms-3" style="margin-top: 130px;">
-                                <h5>{{user.first_name}} {{user.last_name}}</h5>
+                                <h5>{{user.first_name}} {{user.last_name}} {{user.username}}</h5>
 
                                 <p>{{info.city}}</p>
 
@@ -70,6 +71,33 @@
         </div>
     </section>
     {%endfor%}
+    {%else%}
+    <section class="h-100 gradient-custom-2">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center h-100">
+                <div class="col col-lg-9 col-xl-7">
+
+                    <div class="card">
+                        <button type="button" class="px-5 py-4 btn btn-primary btn-lg">
+                            Edit profile
+                        </button>
+                        <div class="rounded-top text-white d-flex flex-row"
+                            style="background-color: #ccc; height:300px;">
+                            <div class="" style="margin-top: 130px; margin-left: 10px;">
+                                <h5>{{user.first_name}} {{user.last_name}} </h5>
+                                <h5>Username: {{user.username}}</h5>
+                                <h5>Email: {{user.email}} </h5>
+                                <h5>Username: {{user.username}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        </div>
+    </section>
+    {%endif%}
     {%endblock content%}
 </body>
 
