@@ -11,6 +11,7 @@
 <body>
     {% extends 'library_app/base.html' %}
     {%block content%}
+    {% for info in person%}
     <section class="h-100 gradient-custom-2">
         <div class="container py-5 h-100">
             <div class="row d-flex justify-content-center align-items-center h-100">
@@ -19,9 +20,8 @@
                         <div class="rounded-top text-white d-flex flex-row"
                             style="background-color: #000; height:200px;">
                             <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px;">
-                                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
-                                    alt="Generic placeholder image" class="img-fluid img-thumbnail mt-4 mb-2"
-                                    style="width: 150px; z-index: 1">
+                                <img src="{{info.profile_pic.url}}" alt="Generic placeholder image"
+                                    class="img-fluid img-thumbnail mt-4 mb-2" style="width: 150px; z-index: 1">
                                 <button type="button" class="btn btn-outline-dark" data-mdb-ripple-color="dark"
                                     style="z-index: 1;">
                                     Edit profile
@@ -29,14 +29,15 @@
                             </div>
                             <div class="ms-3" style="margin-top: 130px;">
                                 <h5>{{user.first_name}} {{user.last_name}}</h5>
-                                <p>New York</p>
+
+                                <p>{{info.city}}</p>
+
                             </div>
                         </div>
                         <div class="p-4 text-black" style="background-color: #f8f9fa;">
                             <div class="d-flex justify-content-end text-center py-1">
                                 <div>
-                                    <p class="mb-1 h5">253</p>
-                                    <p class="small text-muted mb-0">Read books</p>
+                                    <p class="small text-muted mb-0">Read books: {{info.read_books}}</p>
                                 </div>
                             </div>
                         </div>
@@ -44,19 +45,7 @@
                             <div class="mb-5">
                                 <p class="lead fw-normal mb-1">About</p>
                                 <div class="p-4" style="background-color: #f8f9fa;">
-                                    <p class="font-italic mb-1">DESCRIPTION: Lorem ipsum dolor sit amet consectetur
-                                        adipisicing elit. Quam ex dignissimos repudiandae facilis laudantium facere
-                                        magnam hic sint similique vel reprehenderit dolor omnis molestiae iure nostrum
-                                        placeat est dolore tempore enim ipsa, deleniti doloremque. Veritatis totam
-                                        repellat saepe sit, dolor aperiam? Delectus praesentium, veniam provident
-                                        aliquam facilis labore cupiditate nam iusto numquam exercitationem modi, sequi
-                                        eligendi temporibus fugit sunt cum, architecto facere nisi. Ratione omnis in,
-                                        sint eos illo minus recusandae! Dolorum, neque nostrum qui inventore
-                                        perspiciatis maiores saepe hic. Iure, dolor laudantium sapiente voluptatum
-                                        voluptatem officia numquam totam, ea et facere voluptate blanditiis id adipisci
-                                        delectus quae, quam iste? Cumque officiis dicta veniam impedit repellat magni a
-                                        ipsa autem, blanditiis molestias perferendis distinctio nobis placeat velit
-                                        debitis nisi minus?</p>
+                                    <p class="font-italic mb-1">{{info.description}}</p>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -65,7 +54,11 @@
                             </div>
                             <div class="row g-2">
                                 <div class="col mb-2">
-                                    <h2 style="text-align: center;">Something</h2>
+                                    {%for i in info.read_books_list%}
+                                    {%for l in i%}
+                                    <h2 style="text-align: center;">{{l}}</h2>
+                                    <hr>
+                                    {%endfor%}{%endfor%}
                                 </div>
 
                             </div>
@@ -76,6 +69,7 @@
             </div>
         </div>
     </section>
+    {%endfor%}
     {%endblock content%}
 </body>
 

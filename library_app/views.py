@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import ListView, CreateView, DetailView
 from django.contrib.auth.models import User
-from .models import Book
+from .models import Book, Person
 from .forms import AddBook
 
 class ListOfBooks(ListView):
@@ -38,13 +38,15 @@ class Search(ListView):
         return context
 
 class Profile(ListView):
-    model = User
+    model = Person
     template_name = 'library_app/profile.html'
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['user_info'] = self.request.user
+        context['person_info'] = Person.objects.filter(user = self.request.user)
+        print(context)
         return context
+    context_object_name = 'person'
  
     
 

@@ -10,8 +10,10 @@ class Person(models.Model):
     description = models.TextField(max_length=950)
     city = models.CharField(max_length=100)
     read_books = models.IntegerField(default=0)
-    read_books_list = ArrayField(ArrayField(models.CharField(max_length=10, blank=True),),)
-    
+    read_books_list = ArrayField(ArrayField(models.CharField(max_length=100, blank=True),),)
+
+
+
 
 class Book(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
