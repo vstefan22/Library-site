@@ -1,8 +1,11 @@
 from django.shortcuts import render
 from django.views.generic import ListView, CreateView, DetailView
 from django.contrib.auth.models import User
+from django.contrib.auth.views import LoginView
+from django.urls import reverse_lazy
 from .models import Book, Person
 from .forms import AddBook
+
 
 class ListOfBooks(ListView):
     model = Book
@@ -47,6 +50,13 @@ class Profile(ListView):
         print(context)
         return context
     context_object_name = 'person'
+
+class Login(LoginView):
+    template_name = 'library_app/login.html'
+    fields = '__all__'
+    redirect_authenticated_user = True
+    def get_success_url(self):
+        return reverse_lazy('index')
  
     
 
