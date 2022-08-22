@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    {%extends 'library_app/base.html'%}
+    {%block content%}
+    <h1 style="text-align: center;">Search results:</h1>
+    <div class="row">
+        {% for i in result%}
+        <div class="col-sm-4" style="margin-top: 10px; margin-left: 10px;">
+            <div class=" card" style="width: 18rem;">
+                <h5 class="card-title">Title: {{i.title}}</h5>
+                <img class="card-img-top" src="{{i.image.url}}" alt="Card image cap">
+                <div class="card-body">
+                    <p class="card-text">Description: {{i.description|slice:255}}...</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Author: {{i.author}}</li>
+                </ul>
+                <div class="card-body">
+                    <p>Genre:{{i.category}}</p>
+                    <p>Read:&nbsp;{{i.read}}</p>
+                    <p>Language: {{i.language}}</p>
+                </div>
+            </div>
+        </div>
+        {%endfor%}
+    </div>
+    {%endblock content%}
+</body>
+
+</html>

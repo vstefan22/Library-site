@@ -11,6 +11,7 @@
 <body>
     {%extends 'library_app/base.html'%}
     {%block content%}
+    <h2 style="text-align: center;">Add book</h2>
     <form method="post" style="margin: 30px;" class="mb-3">
         {%csrf_token%}
         {%for field in form%}

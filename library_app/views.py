@@ -1,6 +1,6 @@
-from typing import List
 from django.shortcuts import render
-from django.views.generic import ListView, CreateView
+from django.views.generic import ListView, CreateView, DetailView
+from django.contrib.auth.models import User
 from .models import Book
 from .forms import AddBook
 
@@ -20,6 +20,31 @@ class AddBookView(CreateView):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
+class Search(ListView):
+    model = Book
+    template_name = 'libarary_app/book_list.html'
+
+    def get_queryset(self):
+        q = self.request.GET.get('search')
+        if q:
+            object_list = self.model.objects.filter(title__icontains = q)
+        else:
+            object_list = self.model.objects.none()
+        return object_list
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['result'] = self.object_list
+        return context
+
+class Profile(ListView):
+    model = User
+    template_name = 'library_app/profile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_info'] = self.request.user
+        return context
  
     
 
