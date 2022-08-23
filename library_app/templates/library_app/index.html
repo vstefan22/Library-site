@@ -31,25 +31,24 @@
                         <li>
                             <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-0 align-middle">
                                 <i class="fs-4 bi-speedometer2"></i>
-                                <span class="ms-1 d-none d-sm-inline">Category:</span> </a>
+                                <span class="ms-1 d-none d-sm-inline">Genre:</span> </a>
+                            {%for i in book%}
                             <ul class="collapse show nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
                                 <li class="w-100 ms-3">
-                                    <a href="#" class="nav-link px-0">
-                                        <span class="d-none d-sm-inline">Filozofija</span></a>
-                                </li>
-                                <li class="w-100 ms-3">
-                                    <a href="#" class="nav-link px-0">
-                                        <span class="d-none d-sm-inline">Filozofija</span></a>
-                                </li>
-                                <li class="w-100 ms-3">
-                                    <a href="#" class="nav-link px-0">
-                                        <span class="d-none d-sm-inline">Filozofija</span></a>
-                                </li>
-                                <li class="w-100 ms-3">
-                                    <a href="#" class="nav-link px-0">
-                                        <span class="d-none d-sm-inline">Filozofija</span></a>
+                                    <form method="get">
+                                        {%csrf_token%}
+
+                                        <a href="{% url 'genres' i.category %}" class="nav-link px-0">
+                                            <span class="d-none d-sm-inline"></span>{{i.category}}</a>
+
+                                    </form>
+
                                 </li>
                             </ul>
+                            {%endfor%}
+
+
+
                         </li>
                         <li>
                             <a href="#" class="nav-link px-0 align-middle">
@@ -58,6 +57,7 @@
                 </div>
             </div>
 
+            <!--
             <div class="row">
                 {% for i in book%}
                 <div class="col-sm-4" style="margin-top: 10px;">
@@ -89,9 +89,9 @@
 
     </div>
 
+-->
 
-
-    {%endblock content%}
+            {%endblock content%}
 </body>
 
 </html>

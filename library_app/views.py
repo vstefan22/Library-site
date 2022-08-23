@@ -1,3 +1,5 @@
+from http.client import HTTPResponse
+from unicodedata import category
 from django.shortcuts import render
 from django.views.generic import ListView, CreateView, DetailView, FormView
 from django.contrib.auth.views import LoginView
@@ -5,6 +7,8 @@ from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.shortcuts import redirect
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
+from django.utils.text import slugify
 
 from .models import Book, Person
 from .forms import AddBook, UserRegisterForm
@@ -13,8 +17,36 @@ from .forms import AddBook, UserRegisterForm
 class ListOfBooks(ListView):
     model = Book
     template_name = 'library_app/index.html'
+    
+
     context_object_name = 'book'
 
+class GenreList(ListView):
+    model = Book
+    template_name = 'library_app/categories.html'
+    
+    def get_queryset(self):
+        q = Book.objects.filter(category__icontains=self.kwargs['ctg'])
+        print(q)
+        if q:
+            object_list = q
+        else:
+            object_list = self.model.objects.none()
+        return object_list
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['result'] = self.object_list
+        return context
+    '''
+    def get_context_data(self, **kwargs):
+        type = self.request.GET.get('category')
+        q = Book.objects.filter(category__icontains = type)
+        context = super().get_context_data(**kwargs)
+        context['genre'] = q
+        print(q)
+        return context
+    '''
 class AddBookView(CreateView):
     model = Book
     form_class = AddBook
