@@ -4,6 +4,8 @@ from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.shortcuts import redirect
+from django.contrib.auth.models import User
+
 from .models import Book, Person
 from .forms import AddBook, UserRegisterForm
 
@@ -47,9 +49,17 @@ class Profile(ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['person_info'] = Person.objects.filter(user = self.request.user)
+        account = Person.objects.filter(profile = self.request.user)
+        profile = User.objects.all()
+        if account:
+            context['person'] = account
+        else:
+            context['profile'] = profile
+        print(account)
+        #account_city = account.city
+        
+            
         return context
-    context_object_name = 'person'
 
 class Login(LoginView):
     template_name = 'library_app/login.html'

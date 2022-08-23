@@ -11,8 +11,12 @@
 <body>
     {% extends 'library_app/base.html' %}
     {%block content%}
+    <!--{{person}}-->
+
+
     {%if person%}
     {% for info in person%}
+
     <section class="h-100 gradient-custom-2">
         <div class="container py-5 h-100">
             <div class="row d-flex justify-content-center align-items-center h-100">
@@ -70,7 +74,9 @@
             </div>
         </div>
     </section>
+
     {%endfor%}
+    </section>
     {%else%}
     <section class="h-100 gradient-custom-2">
         <div class="container py-5 h-100">
@@ -98,6 +104,7 @@
     </section>
     {%endif%}
     {%endblock content%}
+
 </body>
 
 </html>

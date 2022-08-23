@@ -5,7 +5,7 @@ from django.db import models
 
 
 class Person(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    profile = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_pic = models.ImageField(default='Nana.jpg', upload_to = 'images/', null=True, blank=True)
     description = models.TextField(max_length=950, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
