@@ -1,26 +1,20 @@
-from http.client import HTTPResponse
-from unicodedata import category
-from django.shortcuts import render
 from django.views.generic import ListView, CreateView, DetailView, FormView
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib.auth import login
-from django.shortcuts import redirect
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
-from django.utils.text import slugify
+
 
 from .models import Book, Person
 from .forms import AddBook, UserRegisterForm
 
-
+# Home page
 class ListOfBooks(ListView):
     model = Book
     template_name = 'library_app/index.html'
-    
-
     context_object_name = 'book'
 
+# Functionlity for genre search from home page
 class GenreList(ListView):
     model = Book
     template_name = 'library_app/categories.html'
@@ -38,15 +32,8 @@ class GenreList(ListView):
         context = super().get_context_data(**kwargs)
         context['result'] = self.object_list
         return context
-    '''
-    def get_context_data(self, **kwargs):
-        type = self.request.GET.get('category')
-        q = Book.objects.filter(category__icontains = type)
-        context = super().get_context_data(**kwargs)
-        context['genre'] = q
-        print(q)
-        return context
-    '''
+
+# Add book 
 class AddBookView(CreateView):
     model = Book
     form_class = AddBook
@@ -58,6 +45,7 @@ class AddBookView(CreateView):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
+# Searching book
 class Search(ListView):
     model = Book
     template_name = 'libarary_app/book_list.html'
@@ -75,6 +63,8 @@ class Search(ListView):
         context['result'] = self.object_list
         return context
 
+
+# Profile page with user data
 class Profile(ListView):
     model = Person
     template_name = 'library_app/profile.html'
@@ -83,16 +73,15 @@ class Profile(ListView):
         context = super().get_context_data(**kwargs)
         account = Person.objects.filter(profile = self.request.user)
         profile = User.objects.all()
+
         if account:
             context['person'] = account
         else:
             context['profile'] = profile
-        print(account)
-        #account_city = account.city
-        
             
         return context
 
+# Log in functionality
 class Login(LoginView):
     template_name = 'library_app/login.html'
     fields = '__all__'
@@ -100,11 +89,13 @@ class Login(LoginView):
     def get_success_url(self):
         return reverse_lazy('index')
 
+# Single page for book
 class BookDetail(DetailView):
     model = Book
     context_object_name = 'book'
     template_name = 'library_app/book.html'
 
+# Register functionality
 class RegisterPage(FormView):
     template_name = 'library_app/register.html'
     form_class = UserRegisterForm

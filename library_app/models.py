@@ -23,7 +23,6 @@ class Book(models.Model):
     category = models.CharField(max_length=100)
     description = models.TextField(max_length=5000, null=True, blank=True)
     published_date = models.DateField(null=True, blank=True)
-    read = models.BooleanField(default=False)
     started_reading = models.DateField(null=True, blank=True)
     finished_reading = models.DateField(null=True, blank=True)
     language = models.CharField(max_length=100, null=True, blank=True, default="Not selected")

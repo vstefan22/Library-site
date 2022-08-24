@@ -5,18 +5,17 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Profile | {{username}}</title>
 </head>
 
 <body>
     {% extends 'library_app/base.html' %}
     {%block content%}
-    <!--{{person}}-->
 
 
     {%if person%}
     {% for info in person%}
-
+    <!--If user adds profile display his data-->
     <section class="h-100 gradient-custom-2">
         <div class="container py-5 h-100">
             <div class="row d-flex justify-content-center align-items-center h-100">
@@ -77,6 +76,7 @@
 
     {%endfor%}
     </section>
+    <!--If user doesn't have profile display user data-->
     {%else%}
     <section class="h-100 gradient-custom-2">
         <div class="container py-5 h-100">
@@ -98,8 +98,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-        </div>
         </div>
     </section>
     {%endif%}

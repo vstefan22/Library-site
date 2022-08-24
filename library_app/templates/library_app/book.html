@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Book detail | {{book.title}}</title>
 </head>
 
 <body>
@@ -14,6 +14,7 @@
     <div style="margin: 20px; font-size: 18px;" class="row">
         <h1 class="card-title " style="text-align: center;">{{book.title}}</h1>
         <h4>Book image:</h4>
+
         <div class=" col-lg-7 pt-4 pt-lg-0">
             <img class="float-start imgshadow" src="{{book.image.url}}" alt="Card image cap"
                 style="width: 200px; height: 200px; margin-right: 20px;">
@@ -22,18 +23,20 @@
                 <p style="margin: 10px;">{{book.description}}</p>
             </div>
         </div>
-        <ul class="list-group list-group-flush">
 
+        <ul class="list-group list-group-flush">
             <li class="list-group-item">
                 Author: &nbsp;{{book.author}}
             </li>
         </ul>
+
         <div class="card-body">
             <p>Genre: &nbsp;{{book.category}}</p>
             <p>Read:&nbsp;{{book.read}}</p>
             <p>Language: &nbsp;{{book.language}}</p>
         </div>
         {%endblock%}
+    </div>
 </body>
 
 </html>
