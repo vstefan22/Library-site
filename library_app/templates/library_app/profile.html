@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+{% extends 'library_app/base.html' %}
 
 <head>
     <meta charset="UTF-8">
@@ -9,7 +10,7 @@
 </head>
 
 <body>
-    {% extends 'library_app/base.html' %}
+
     {%block content%}
 
 
@@ -84,7 +85,9 @@
                 <div class="col col-lg-9 col-xl-7">
                     <div class="card">
                         <button type="button" class="px-5 py-4 btn btn-primary btn-lg">
-                            Edit profile
+                            <a href="{% url 'create_profile' %}">
+                                Add profile
+                            </a>
                         </button>
                         <div class="rounded-top text-white d-flex flex-row"
                             style="background-color: #ccc; height:300px;">

@@ -1,4 +1,51 @@
-<!--Need to finish this page-->
-{% for i in result%}
-{{i}}
-{%endfor%}
+<!DOCTYPE html>
+<html lang="en">
+{%extends 'library_app/base.html'%}
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library | {{genre}}</title>
+</head>
+
+<body>
+
+    {%block content%}
+    <div class="row">
+        <h1 style="text-align: center;">Results for {{genre}} genre:</h1>
+        {% for i in result%}
+
+        <div class="col-sm-4" style="margin-top: 10px; margin-left: 10px;">
+
+            <a href="{% url 'book' i.id%}" class="text-decoration-none" style="color: black;">
+                <div class="card text-reset" style="width: 18rem;">
+
+                    <h5 class="card-title ">{{i.title}}</h5>
+
+                    <img class="card-img-top" src="{{i.image.url}}" alt="Card image cap">
+
+                    <div class="card-body">
+                        <p class="card-text">{{i.description|slice:255}}...</p>
+                    </div>
+
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">{{i.author}}</li>
+                    </ul>
+
+                    <div class="card-body">
+                        <p>Genre:{{i.category}}</p>
+                        <p>Read:&nbsp;{{i.read}}</p>
+                        <p>Language: {{i.language}}</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {%endfor%}
+    </div>
+    </div>
+    </div>
+    {%endblock%}
+</body>
+
+</html>

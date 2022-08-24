@@ -33,4 +33,4 @@ class UserRegisterForm(UserCreationForm):
 class PersonInfo(ModelForm):
     class Meta:
         model = models.Person
-        fields = ['profile_pic', 'description', 'city', 'read_books']
+        fields = ['profile_pic', 'description', 'city']
