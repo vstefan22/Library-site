@@ -1,12 +1,12 @@
-from django.views.generic import ListView, CreateView, DetailView, FormView
+from django.views.generic import ListView, CreateView, DetailView, FormView, UpdateView
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.contrib.auth.models import User
 
 
-from .models import Book, Person
-from .forms import AddBook, PersonInfo, UserRegisterForm
+from .models import Book, Person, AddReadBook
+from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm
 
 
 # Home page
@@ -14,6 +14,13 @@ class ListOfBooks(ListView):
     model = Book
     template_name = 'library_app/index.html'
     context_object_name = 'book'
+
+
+# Single page for book
+class BookDetail(DetailView):
+    model = Book
+    context_object_name = 'book'
+    template_name = 'library_app/book.html'
 
 
 # Functionlity for genre search from home page
@@ -50,6 +57,17 @@ class AddBookView(CreateView):
         return super().form_valid(form)
 
 
+
+class AddReadBook(CreateView):
+    model = AddReadBook
+    form_class = AddReadBookForm
+    template_name = 'library_app/add_read_book.html'
+    success_url = '/home/'
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
 # Searching book
 class Search(ListView):
     model = Book
@@ -68,6 +86,7 @@ class Search(ListView):
         context['result'] = self.object_list
         return context
 
+# User functionalities 
 
 # Profile page with user data
 class Profile(ListView):
@@ -96,11 +115,7 @@ class Login(LoginView):
         return reverse_lazy('index')
 
 
-# Single page for book
-class BookDetail(DetailView):
-    model = Book
-    context_object_name = 'book'
-    template_name = 'library_app/book.html'
+
 
 
 # Register functionality

@@ -4,6 +4,13 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 
+class AddReadBook(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    describe = models.TextField()
+    started_reading = models.DateField()
+    finished_reading = models.DateField
+
 class Person(models.Model):
     profile = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     profile_pic = models.ImageField(default='Nana.jpg', upload_to = 'images/', null=True, blank=True)
@@ -23,12 +30,14 @@ class Book(models.Model):
     category = models.CharField(max_length=100)
     description = models.TextField(max_length=5000, null=True, blank=True)
     published_date = models.DateField(null=True, blank=True)
-    started_reading = models.DateField(null=True, blank=True)
-    finished_reading = models.DateField(null=True, blank=True)
     language = models.CharField(max_length=100, null=True, blank=True, default="Not selected")
 
     def __str__(self):
         return self.title
+
+
+
+
         
 
 
