@@ -11,15 +11,14 @@ class AddReadBook(models.Model):
     started_reading = models.DateField()
     finished_reading = models.DateField
 
+
 class Person(models.Model):
     profile = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     profile_pic = models.ImageField(default='Nana.jpg', upload_to = 'images/', null=True, blank=True)
     description = models.TextField(max_length=950, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
-    read_books = models.IntegerField(default=0, null=True, blank=True)
-    read_books_list = ArrayField(ArrayField(models.CharField(max_length=100, null=True, blank=True),),null=True, blank=True,)
-
-
+    read_books_count = models.IntegerField(default=0, null=True, blank=True)
+    read_books_list = ArrayField(models.CharField(max_length=100, null=True, blank=True),null=True, blank=True,)
 
 
 class Book(models.Model):
