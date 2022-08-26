@@ -8,7 +8,7 @@ urlpatterns = [
     path('search/', views.Search.as_view(), name = 'search'),
     path('genres/<str:ctg>/', views.GenreList.as_view(), name = 'genres'),
     path('book/<int:pk>/', views.BookDetail.as_view(), name='book'),
-    path('read_book/<str:title>/', views.AddReadBook.as_view(), name= 'add_read_book'),
+    path('read_book/<str:t>/', views.AddReadBookView.as_view(), name= 'add_read_book'),
 
     # User account functionality
     path('profile/', views.Profile.as_view(), name = 'profile'),

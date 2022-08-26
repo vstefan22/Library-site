@@ -4,8 +4,8 @@ from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.contrib.auth.models import User
 
-
-from .models import Book, Person, AddReadBook
+from .models import AddReadBook
+from .models import Book, Person
 from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm
 
 
@@ -58,14 +58,17 @@ class AddBookView(CreateView):
 
 
 
-class AddReadBook(CreateView):
+class AddReadBookView(CreateView):
     model = AddReadBook
     form_class = AddReadBookForm
     template_name = 'library_app/add_read_book.html'
     success_url = '/home/'
 
+    
+        
     def form_valid(self, form):
         form.instance.user = self.request.user
+        form.instance.title = self.kwargs['t']
         return super().form_valid(form)
 
 # Searching book
@@ -96,10 +99,12 @@ class Profile(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         account = Person.objects.filter(profile = self.request.user)
+        read_books = AddReadBook.objects.filter(user = self.request.user)
         profile = User.objects.all()
 
         if account:
             context['person'] = account
+            context['read_books'] = read_books
         else:
             context['profile'] = profile
             
@@ -113,10 +118,6 @@ class Login(LoginView):
     redirect_authenticated_user = True
     def get_success_url(self):
         return reverse_lazy('index')
-
-
-
-
 
 # Register functionality
 class RegisterPage(FormView):
