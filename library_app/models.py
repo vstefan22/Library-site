@@ -1,3 +1,4 @@
+from xml.etree.ElementInclude import default_loader
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 
@@ -6,10 +7,10 @@ from django.db import models
 
 class AddReadBook(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=100, unique=True)
+    title = models.CharField(max_length=100)
     describe = models.TextField()
     started_reading = models.DateField()
-    finished_reading = models.DateField
+    finished_reading = models.DateField(null=True, blank=True)
 
 
 class Person(models.Model):
@@ -17,7 +18,7 @@ class Person(models.Model):
     profile_pic = models.ImageField(default='Nana.jpg', upload_to = 'images/', null=True, blank=True)
     description = models.TextField(max_length=950, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
-    read_books_list = ArrayField(models.CharField(max_length=100, null=True, blank=True),null=True, blank=True,)
+    
 
 
 class Book(models.Model):
@@ -33,6 +34,11 @@ class Book(models.Model):
     def __str__(self):
         return self.title
 
+
+class SavedBook(models.Model):
+    person = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    title = models.CharField(max_length=100, default="")
+   
 
 
 

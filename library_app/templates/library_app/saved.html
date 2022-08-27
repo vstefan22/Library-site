@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    {%extends 'library_app/base.html'%}
+    {%block content%}
+    {% for i in saved_books%}
+
+    <a href="{% url 'book' i.title%}" <div class="col-sm-4" style="margin: 10px;">
+        <div class="card text-reset" style="width: 18rem; margin: 10px;">
+
+            <h5 class="card-title">{{i.title}}</h5>
+
+        </div>
+        </div>
+    </a>
+    </div>
+
+    {%endfor%}
+    {%endblock%}
+</body>
+
+</html>

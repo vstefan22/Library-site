@@ -1,10 +1,13 @@
-from django.views.generic import ListView, CreateView, DetailView, FormView, UpdateView
+from csv import excel
+from itertools import count
+from django.views.generic import ListView, CreateView, DetailView, FormView, UpdateView, View
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
 
-from .models import AddReadBook
+from .models import AddReadBook, SavedBook
 from .models import Book, Person
 from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm, EditProfileForm
 
@@ -14,12 +17,16 @@ class ListOfBooks(ListView):
     model = Book
     template_name = 'library_app/index.html'
     context_object_name = 'book'
-
-
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        saved_books = SavedBook.objects.values_list(flat=True).distinct()
+      
+        return context
 # Single page for book
 class BookDetail(DetailView):
     model = Book
     context_object_name = 'book'
+    slug_field = 'title'
     template_name = 'library_app/book.html'
 
 
@@ -102,6 +109,27 @@ class ReadBooksList(ListView):
         context = super().get_context_data(**kwargs)
         context['list'] = AddReadBook.objects.filter(user = self.request.user)
         return context
+
+class Save(View):
+    
+    def get(self, request, *args, **kwargs):
+
+        SavedBook(person=request.user, title = kwargs['title']).save()
+        return HttpResponseRedirect('/home/')
+
+
+
+
+class Saved(ListView):
+    model = SavedBook
+    template_name = 'library_app/saved.html'
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        books = SavedBook.objects.values_list('title', flat=True).distinct()
+        context['saved_books'] = books
+        return context
+    
+
 # User functionalities 
 
 # Profile page with user data
