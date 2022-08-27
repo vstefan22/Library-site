@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+{%extends 'library_app/base.html'%}
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail</title>
+    <title>Library | Your detail for {{book.title}} </title>
 </head>
 
 <body>
-    {%extends 'library_app/base.html'%}
+
     {%block content%}
     {%if book%}
     <div style="margin: 20px; font-size: 18px;" class="row">
@@ -17,7 +18,9 @@
         <div class=" col-lg-7 pt-4 pt-lg-0">
             <div style="margin: 10px;">
                 <h3>Your description of the book:</h3>
-                <p style="margin: 10px;">{{book.describe}}</p>
+                <p style="margin: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;{{book.describe}}</p>
+                <p>Started reading: {{book.started_reading}}</p>
+                <p>Finished reading: {{book.finished_reading}}</p>
             </div>
         </div>
     </div>

@@ -1,6 +1,5 @@
-from csv import excel
-from itertools import count
 from django.views.generic import ListView, CreateView, DetailView, FormView, UpdateView, View
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib.auth import login
@@ -52,7 +51,9 @@ class GenreList(ListView):
 
 
 # Add book 
-class AddBookView(CreateView):
+class AddBookView(LoginRequiredMixin, CreateView):
+    login_url = '/login/'
+    
     model = Book
     form_class = AddBook
     context_object_name = 'books'
@@ -65,7 +66,7 @@ class AddBookView(CreateView):
 
 
 
-class AddReadBookView(CreateView):
+class AddReadBookView(LoginRequiredMixin, CreateView):
     model = AddReadBook
     form_class = AddReadBookForm
     template_name = 'library_app/add_read_book.html'
@@ -76,6 +77,12 @@ class AddReadBookView(CreateView):
         form.instance.user = self.request.user
         form.instance.title = self.kwargs['t']
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.kwargs['t']
+        return context
+
 
 # Searching book
 class Search(ListView):
@@ -95,14 +102,15 @@ class Search(ListView):
         context['result'] = self.object_list
         return context
 
-class ReadBookDetail(DetailView):
+
+class ReadBookDetail(LoginRequiredMixin, DetailView):
     model = AddReadBook
     template_name = 'library_app/detail_read_book.html'
     slug_field = 'title'
     context_object_name = 'book'
 
 
-class ReadBooksList(ListView):
+class ReadBooksList(LoginRequiredMixin, ListView):
     model = AddReadBook
     template_name = 'library_app/read_books_list.html'
     def get_context_data(self, **kwargs):
@@ -110,17 +118,16 @@ class ReadBooksList(ListView):
         context['list'] = AddReadBook.objects.filter(user = self.request.user)
         return context
 
-class Save(View):
+class Save(LoginRequiredMixin, View):
     
     def get(self, request, *args, **kwargs):
-
         SavedBook(person=request.user, title = kwargs['title']).save()
         return HttpResponseRedirect('/home/')
 
 
 
 
-class Saved(ListView):
+class Saved(LoginRequiredMixin, ListView):
     model = SavedBook
     template_name = 'library_app/saved.html'
     def get_context_data(self, **kwargs):
@@ -133,7 +140,7 @@ class Saved(ListView):
 # User functionalities 
 
 # Profile page with user data
-class Profile(ListView):
+class Profile(LoginRequiredMixin, ListView):
     model = Person
     template_name = 'library_app/profile.html'
     
@@ -177,7 +184,7 @@ class RegisterPage(FormView):
         return super(RegisterPage, self).form_valid(form)
 
 
-class CreateProfile(CreateView):
+class CreateProfile(LoginRequiredMixin, CreateView):
     model = Profile
     form_class = PersonInfo
     template_name = 'library_app/create_profile.html'
@@ -190,7 +197,7 @@ class CreateProfile(CreateView):
         return super().form_valid(form)
 
 
-class EditProfile(UpdateView):
+class EditProfile(LoginRequiredMixin, UpdateView):
     model = User
     form_class = EditProfileForm
     template_name = 'library_app/edit_profile.html'

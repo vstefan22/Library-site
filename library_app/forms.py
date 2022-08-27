@@ -22,7 +22,13 @@ class AddBook(ModelForm):
 class AddReadBookForm(ModelForm):
     class Meta:
         model = models.AddReadBook
-        fields = ['describe', 'started_reading']
+        fields = ['describe', 'started_reading', 'finished_reading']
+        widgets = {
+            
+            'started_reading':forms.DateInput(attrs={'placeholder': '  e.g. 2022-6-22'}),
+            'finished_reading':forms.DateInput(attrs={'placeholder': '  e.g. 2022-7-15'}),
+
+        }
         
   
 # Register user form

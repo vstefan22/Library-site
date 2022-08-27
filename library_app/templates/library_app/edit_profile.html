@@ -1,5 +1,32 @@
-<form method='post'>
-    {%csrf_token%}
-    {{form.as_p}}
-    <input type="submit">
-</form>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library | Edit profile</title>
+</head>
+
+<body>
+    {%extends 'library_app/base.html'%}
+    {%block content%}
+    <h2 style="text-align: center;">Edit profile</h2>
+    <form method='post' style="margin: 20px;">
+        {%csrf_token%}
+        {%for field in form%}
+        <div class="row mb-3">
+            {{ field.errors }}
+            <p class="form-label">{{ field.label_tag }}</p>
+            <p class="form-control">{{ field }}</p>
+            {% if field.help_text %}
+            <p class="help">{{ field.help_text|safe }}</p>
+            {% endif %}
+        </div>
+        {%endfor%}
+        <input type="submit">
+    </form>
+    {%endblock%}
+</body>
+
+</html>
