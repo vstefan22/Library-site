@@ -12,7 +12,7 @@ Also they can add their own books. Each user can write description about what th
 * Python: 3.9
 * Django: 4.1
 * Postgresql: 6.1
-* * Bootstrap: 5
+* Bootstrap: 5
 * HTML5, CSS3
 
 ## Setup
