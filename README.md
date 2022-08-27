@@ -5,8 +5,8 @@
 * [Setup](#setup)
 
 ## Introduction
-Purpose of Library web site is to help readers find books to read. They can save them, read description about them and have general info. 
-Also they can add their own books and write description about what they learned by reading them.
+Purpose of Library web site is to help readers find books to read. They can save them, read description and have general info about them. 
+Also they can add their own books. Each user can write description about what they learned by reading specific book.
 
 ##Technologies
 * Python: 3.9
