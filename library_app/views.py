@@ -64,7 +64,6 @@ class AddReadBookView(CreateView):
     template_name = 'library_app/add_read_book.html'
     success_url = '/home/'
 
-    
         
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -89,6 +88,11 @@ class Search(ListView):
         context['result'] = self.object_list
         return context
 
+class ReadBookDetail(DetailView):
+    model = AddReadBook
+    template_name = 'library_app/detail_read_book.html'
+    slug_field = 'title'
+    context_object_name = 'book'
 # User functionalities 
 
 # Profile page with user data

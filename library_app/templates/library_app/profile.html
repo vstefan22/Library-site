@@ -58,18 +58,16 @@
                                 <p class="mb-0"><a href="#!" class="text-muted">Show all</a></p>
                             </div>
                             <div class="row g-2">
+                                <!--Shows books that user has read-->
 
                                 <div class="col mb-2">
-                                    {%for i in read_books%}
-
-                                    <h2 style="text-align: center;">{{i.title}}</h2>
-                                    <hr>
+                                    {% for book in read_books%}
+                                    <h2 style="text-align: center;">
+                                        <a href="{% url 'read_books_detail' book.title %}">{{book.title}}</a>
+                                    </h2>
                                     {%endfor%}
                                 </div>
-
-
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -87,17 +85,16 @@
                 <div class="col col-lg-9 col-xl-7">
                     <div class="card">
                         <button type="button" class="px-5 py-4 btn btn-primary btn-lg">
-                            <a href="{% url 'create_profile' %}">
+                            <a href="{% url 'create_profile' %}" style="color: white;">
                                 Add profile
                             </a>
                         </button>
                         <div class="rounded-top text-white d-flex flex-row"
                             style="background-color: #ccc; height:300px;">
                             <div class="" style="margin-top: 130px; margin-left: 10px;">
-                                <h5>{{user.first_name}} {{user.last_name}} </h5>
+                                <h5>Full name: {{user.first_name}} {{user.last_name}} </h5>
                                 <h5>Username: {{user.username}}</h5>
                                 <h5>Email: {{user.email}} </h5>
-                                <h5>Username: {{user.username}}</h5>
                             </div>
                         </div>
                     </div>

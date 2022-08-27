@@ -9,6 +9,7 @@ urlpatterns = [
     path('genres/<str:ctg>/', views.GenreList.as_view(), name = 'genres'),
     path('book/<int:pk>/', views.BookDetail.as_view(), name='book'),
     path('read_book/<str:t>/', views.AddReadBookView.as_view(), name= 'add_read_book'),
+    path('profile/<slug:slug>/', views.ReadBookDetail.as_view(), name = 'read_books_detail'),
 
     # User account functionality
     path('profile/', views.Profile.as_view(), name = 'profile'),
