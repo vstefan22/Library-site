@@ -18,7 +18,7 @@ urlpatterns = [
     path('login/', views.Login.as_view(), name = 'login'),
     path('register/', views.RegisterPage.as_view(), name = 'register'),
     path('create_profile/', views.CreateProfile.as_view(), name = 'create_profile'),
-    path('edit_profile/<slug:slug>/', views.EditProfile.as_view(), name = 'edit_profile'),
+    path('edit_profile/<int:pk>/', views.EditProfile.as_view(), name = 'edit_profile'),
    
 
 ]

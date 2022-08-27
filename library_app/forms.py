@@ -42,5 +42,6 @@ class PersonInfo(ModelForm):
 
     
 class EditProfileForm(ModelForm):
-    model = User
-    fields = ['email', 'first_name', 'last_name']
+    class Meta:
+        model = User
+        fields = ['email', 'first_name', 'last_name']

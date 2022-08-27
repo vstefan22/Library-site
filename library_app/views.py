@@ -163,10 +163,15 @@ class CreateProfile(CreateView):
 
 
 class EditProfile(UpdateView):
-    model = Profile 
+    model = User
     form_class = EditProfileForm
     template_name = 'library_app/edit_profile.html'
     success_url = '/profile/'
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+        
 
 
     
