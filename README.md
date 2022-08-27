@@ -1,9 +1,8 @@
 # Library - web site
 ## Table of contents
-[Introduction](#introduction)
-[Technologies](#technologies)
-[Setup](#setup)
-[Project screenshot](#screenshot)
+* [Introduction](#introduction)
+* [Technologies](#technologies)
+* [Setup](#setup)
 
 ## Introduction
 Purpose of Library web site is to help readers find books to read. They can save them, read description about them and have general info. 
