@@ -17,8 +17,8 @@ Also they can add their own books. Each user can write description about what th
 
 ## Setup
 * 1. Clone this project to your local machine.
-* 2. Postion yourself in \Library site\library using terminal cd command.
-* 3. Run python manage.py runserver.
+* 2. Postion yourself in "\Library site\library" using terminal cd command.
+* 3. Run: python manage.py runserver.
 * 4. Go to http://127.0.0.1:8000/home/.
 
 ### Project status
