@@ -29,11 +29,14 @@
                                     class="img-fluid img-thumbnail mt-4 mb-2" style="width: 150px; z-index: 1">
                                 <button type="button" class="btn btn-outline-dark" data-mdb-ripple-color="dark"
                                     style="z-index: 1;">
-                                    Edit profile
+                                    <a href="{% url 'edit_profile' user.username%}">
+                                        Edit profile
+                                    </a>
                                 </button>
                             </div>
                             <div class="ms-3" style="margin-top: 130px;">
-                                <h5>{{user.first_name}} {{user.last_name}} {{user.username}}</h5>
+                                <h5>{{user.first_name}} {{user.last_name}} </h5>
+                                <h5>{{user.username}}</h5>
 
                                 <p>{{info.city}}</p>
 
@@ -42,7 +45,7 @@
                         <div class="p-4 text-black" style="background-color: #f8f9fa;">
                             <div class="d-flex justify-content-end text-center py-1">
                                 <div>
-                                    <p class="small text-muted mb-0">Read books: {{info.read_books}}</p>
+                                    <p class="small text-muted mb-0">Read books: {{read_books_count}}</p>
                                 </div>
                             </div>
                         </div>
@@ -55,7 +58,8 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <p class="lead fw-normal mb-0">Recent books</p>
-                                <p class="mb-0"><a href="#!" class="text-muted">Show all</a></p>
+                                <p class="mb-0"><a href="{% url 'read_books_list' %}" class="text-muted">Show all</a>
+                                </p>
                             </div>
                             <div class="row g-2">
                                 <!--Shows books that user has read-->
@@ -66,6 +70,7 @@
                                         <a href="{% url 'read_books_detail' book.title %}">{{book.title}}</a>
                                     </h2>
                                     {%endfor%}
+
                                 </div>
                             </div>
                         </div>

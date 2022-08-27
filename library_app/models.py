@@ -6,7 +6,7 @@ from django.db import models
 
 class AddReadBook(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, unique=True)
     describe = models.TextField()
     started_reading = models.DateField()
     finished_reading = models.DateField
@@ -17,7 +17,6 @@ class Person(models.Model):
     profile_pic = models.ImageField(default='Nana.jpg', upload_to = 'images/', null=True, blank=True)
     description = models.TextField(max_length=950, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
-    read_books_count = models.IntegerField(default=0, null=True, blank=True)
     read_books_list = ArrayField(models.CharField(max_length=100, null=True, blank=True),null=True, blank=True,)
 
 

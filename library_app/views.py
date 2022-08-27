@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 from .models import AddReadBook
 from .models import Book, Person
-from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm
+from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm, EditProfileForm
 
 
 # Home page
@@ -93,6 +93,15 @@ class ReadBookDetail(DetailView):
     template_name = 'library_app/detail_read_book.html'
     slug_field = 'title'
     context_object_name = 'book'
+
+
+class ReadBooksList(ListView):
+    model = AddReadBook
+    template_name = 'library_app/read_books_list.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['list'] = AddReadBook.objects.filter(user = self.request.user)
+        return context
 # User functionalities 
 
 # Profile page with user data
@@ -103,12 +112,14 @@ class Profile(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         account = Person.objects.filter(profile = self.request.user)
-        read_books = AddReadBook.objects.filter(user = self.request.user)
+        read_books = AddReadBook.objects.filter(user = self.request.user)[:3]
+        read_books_count = AddReadBook.objects.filter(user = self.request.user).count()
         profile = User.objects.all()
 
         if account:
             context['person'] = account
             context['read_books'] = read_books
+            context['read_books_count'] = read_books_count
         else:
             context['profile'] = profile
             
@@ -150,6 +161,12 @@ class CreateProfile(CreateView):
         form.save()
         return super().form_valid(form)
 
+
+class EditProfile(UpdateView):
+    model = Profile 
+    form_class = EditProfileForm
+    template_name = 'library_app/edit_profile.html'
+    success_url = '/profile/'
 
 
     

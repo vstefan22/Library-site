@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    {%extends 'library_app/base.html'%}
+    {%block content%}
+    {%for book in list%}
+    <div class="" style="margin: 10px;">
+        <a href="{% url 'read_books_detail' book.title %}" class="text-decoration-none" style="color: black;">
+            <div class="card text-reset" style="width: 18rem;">
+
+                <h5 class="card-title">{{book.title}}</h5>
+                <div class="card-body">
+                    <p class="card-text">{{book.describe|slice:255}}...</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    {%endfor%}
+    {%endblock%}
+</body>
+
+</html>

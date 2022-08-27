@@ -39,3 +39,8 @@ class PersonInfo(ModelForm):
     class Meta:
         model = models.Person
         fields = ['profile_pic', 'description', 'city']
+
+    
+class EditProfileForm(ModelForm):
+    model = User
+    fields = ['email', 'first_name', 'last_name']
