@@ -75,13 +75,15 @@
                                 <p>Genre:{{i.category}}</p>
                                 <p>Language: {{i.language}}</p>
 
-                                <p><a href=" {% url 'add_read_book' i.title %}">I read this book
+                                <p><a href=" {% url 'add_read_book' i.title %}">I have read this book
                                     </a></p>
 
-                                <form method='post'>
+
+                                <form method="post">
                                     {%csrf_token%}
-                                    <button type="submit"><a href=" {% url 'save' i.title %}">Save book
-                                        </a></button>
+                                    <button type="submit" value="{{i.title">
+                                        <a href=" {% url 'save' i.title %}">Save book</a>
+                                    </button>
                                 </form>
 
                             </div>

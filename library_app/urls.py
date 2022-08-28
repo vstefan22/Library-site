@@ -12,7 +12,7 @@ urlpatterns = [
     path('profile/<slug:slug>/', views.ReadBookDetail.as_view(), name = 'read_books_detail'),
     path('read_books_list/', views.ReadBooksList.as_view(), name = 'read_books_list'),
     path('saved/', views.Saved.as_view(), name = 'saved'),
-    path('save/<str:title>', views.Save.as_view(), name = 'save'),
+    path('save/<slug:title>/', views.Save.as_view(), name = 'save'),
 
     # User account functionality
     path('profile/', views.Profile.as_view(), name = 'profile'),

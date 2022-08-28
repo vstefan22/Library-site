@@ -11,19 +11,42 @@
 <body>
     {%extends 'library_app/base.html'%}
     {%block content%}
-    {% for i in saved_books%}
 
-    <a href="{% url 'book' i.title%}" <div class="col-sm-4" style="margin: 10px;">
-        <div class="card text-reset" style="width: 18rem; margin: 10px;">
 
-            <h5 class="card-title">{{i.title}}</h5>
+    <h1 style="text-align: center;">Saved books</h1>
+    <div class="row">
+        {% for i in saved_books%}
+        <div class="col-sm-4" style="margin: 20px;">
 
+            <a href="{% url 'book' i.book.title%}" class="text-decoration-none" style="color: black;">
+                <div class="card text-reset" style="width: 18rem;">
+
+                    <h5 class="card-title">{{i.book.title}}</h5>
+
+                    <img class="card-img-top" src="{{i.book.image.url}}" alt="Card image cap">
+
+                    <div class="card-body">
+                        <p class="card-text">{{i.book.description|slice:255}}...</p>
+                    </div>
+
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">{{i.book.author}}</li>
+                    </ul>
+
+                    <div class="card-body">
+                        <p>Genre:{{i.book.category}}</p>
+                        <p>Language: {{i.book.language}}</p>
+
+                        <p><a href=" {% url 'add_read_book' i.book.title %}">I have read this book
+                            </a></p>
+                    </div>
+                </div>
+            </a>
         </div>
-        </div>
-    </a>
+        {%endfor%}
     </div>
 
-    {%endfor%}
+
     {%endblock%}
 </body>
 

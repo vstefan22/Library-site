@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
 
 from .models import AddReadBook, SavedBook
 from .models import Book, Person
@@ -118,11 +119,7 @@ class ReadBooksList(LoginRequiredMixin, ListView):
         context['list'] = AddReadBook.objects.filter(user = self.request.user)
         return context
 
-class Save(LoginRequiredMixin, View):
-    
-    def get(self, request, *args, **kwargs):
-        SavedBook(person=request.user, title = kwargs['title']).save()
-        return HttpResponseRedirect('/home/')
+
 
 
 
@@ -132,10 +129,29 @@ class Saved(LoginRequiredMixin, ListView):
     template_name = 'library_app/saved.html'
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
-        books = SavedBook.objects.values_list('title', flat=True).distinct()
+        books = SavedBook.objects.all()
         context['saved_books'] = books
+        
         return context
+
+
+class Save(CreateView):
+    model = SavedBook
+    fields = ['person', 'book']
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        title = self.kwargs['title']
+        book = Book.objects.get(title = title)
+        saved_book_ = SavedBook.objects.create(book =book, person = self.request.user)
+        saved_book_.save()
+        context['saved_book'] = saved_book_
+        return context
+
+    template_name = 'library_app/saved.html'
+
     
+
+      
 
 # User functionalities 
 
