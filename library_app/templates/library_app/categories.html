@@ -13,6 +13,7 @@
 
     {%block content%}
     <div class="row">
+        {% include 'library_app/messages.html' %}
         <h1 style="text-align: center;">Results for {{genre}} genre:</h1>
         {% for i in result%}
 
