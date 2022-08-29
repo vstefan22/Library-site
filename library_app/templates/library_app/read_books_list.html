@@ -11,6 +11,28 @@
 <body>
     {%extends 'library_app/base.html'%}
     {%block content%}
+    <form class="d-flex" method="get" action="{% url 'read_books_list'%}" style="margin: 20px;">
+        {%csrf_token%}
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
+        <button class="btn btn-outline-success" type="submit">Search for read books</button>
+    </form>
+
+    {%if searched_data%}
+    <h1 style="text-align: center;"> Searched results</h1>
+    {%for book in searched_data%}
+    <div class="" style="margin: 10px;">
+        <a href="{% url 'read_books_detail' book.title %}" class="text-decoration-none" style="color: black;">
+            <div class="card text-reset" style="width: 18rem;">
+
+                <h5 class="card-title">{{book.title}}</h5>
+                <div class="card-body">
+                    <p class="card-text">{{book.describe|slice:255}}...</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    {%endfor%}
+    {%else%}
     {%for book in list%}
     <div class="" style="margin: 10px;">
         <a href="{% url 'read_books_detail' book.title %}" class="text-decoration-none" style="color: black;">
@@ -24,6 +46,7 @@
         </a>
     </div>
     {%endfor%}
+    {%endif%}
     {%endblock%}
 </body>
 

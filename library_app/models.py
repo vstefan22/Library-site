@@ -32,6 +32,9 @@ class Book(models.Model):
     language = models.CharField(max_length=100, null=True, blank=True, default="Not selected")
 
 
+    def __str__(self):
+        return self.title
+
 
 
 class SavedBook(models.Model):
