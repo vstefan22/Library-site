@@ -4,8 +4,9 @@ from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.http import  HttpResponse
+from django.contrib import messages
+
 
 from .models import AddReadBook, SavedBook
 from .models import Book, Person
@@ -16,12 +17,47 @@ from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm, EditP
 class ListOfBooks(ListView):
     model = Book
     template_name = 'library_app/index.html'
-    context_object_name = 'book'
+
     def get_context_data(self, **kwargs):
-        context =  super().get_context_data(**kwargs)
-        saved_books = SavedBook.objects.values_list(flat=True).distinct()
-      
+        context = super().get_context_data(**kwargs)
+        saved_book = SavedBook.objects.filter(person = self.request.user)
+        read_books = AddReadBook.objects.filter(user = self.request.user)
+        book_category = Book.objects.all()
+        list_a = []
+        if saved_book or read_books:
+            
+            for s_book in saved_book:
+                s_book_title = s_book.book.title
+                list_a.append(s_book_title)
+
+            
+
+            for r_book in read_books:
+                r_book_title = r_book.title
+                list_a.append(r_book_title)
+            exc = Book.objects.exclude(title__in = list_a)
+            print(exc)
+
+        else:
+            exc = Book.objects.all()
+
+
+        context['book'] = exc
+        context['book_category'] = book_category
         return context
+
+
+
+class Save(CreateView):
+    model = SavedBook
+    fields = ['person', 'book']
+    template_name = 'library_app/saved.html'
+    def get_context_data(self,**kwargs):
+        title = self.kwargs['title']
+        book = Book.objects.get(title = title)
+        saved_book_ = SavedBook.objects.create(book = book, person = self.request.user)
+        saved_book_.save()
+        messages.success(self.request, 'Book saved successfully!')
 # Single page for book
 class BookDetail(DetailView):
     model = Book
@@ -120,38 +156,19 @@ class ReadBooksList(LoginRequiredMixin, ListView):
         return context
 
 
-
-
-
-
 class Saved(LoginRequiredMixin, ListView):
     model = SavedBook
     template_name = 'library_app/saved.html'
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
-        books = SavedBook.objects.all()
+        books = SavedBook.objects.filter(person = self.request.user)
         context['saved_books'] = books
         
         return context
 
 
-class Save(CreateView):
-    model = SavedBook
-    fields = ['person', 'book']
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        title = self.kwargs['title']
-        book = Book.objects.get(title = title)
-        saved_book_ = SavedBook.objects.create(book =book, person = self.request.user)
-        saved_book_.save()
-        context['saved_book'] = saved_book_
-        return context
 
-    template_name = 'library_app/saved.html'
-
-    
-
-      
+                
 
 # User functionalities 
 

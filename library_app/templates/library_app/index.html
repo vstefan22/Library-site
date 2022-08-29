@@ -11,6 +11,7 @@
 
 <body>
     {%block content%}
+
     <!--Side menu-->
     <div class="container-fluid" style="margin-top: 5px;">
         <div class="row flex-nowrap">
@@ -30,7 +31,7 @@
                                 <i class="fs-4 bi-speedometer2"></i>
                                 <span class="ms-1 d-none d-sm-inline">Genre:</span> </a>
 
-                            {%for i in book%}
+                            {%for i in book_category%}
                             <ul class="collapse show nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
                                 <li class="w-100 ms-3">
 

@@ -31,8 +31,7 @@ class Book(models.Model):
     published_date = models.DateField(null=True, blank=True)
     language = models.CharField(max_length=100, null=True, blank=True, default="Not selected")
 
-    def __str__(self):
-        return self.title
+
 
 
 class SavedBook(models.Model):
