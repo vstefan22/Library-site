@@ -12,11 +12,10 @@ from .models import AddReadBook, SavedBook
 from .models import Book, Person
 from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm, EditProfileForm
 
+
 list_a = []
 exc = Book.objects.exclude(title__in = list_a)
 
-for i in exc:
-    print(i.title)
 # Home page
 class ListOfBooks(ListView):
     model = Book
@@ -24,28 +23,20 @@ class ListOfBooks(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        saved_book = SavedBook.objects.filter(person = self.request.user)
-        read_books = AddReadBook.objects.filter(user = self.request.user)
-        book_category = Book.objects.all()
-        
-
-        if saved_book or read_books:
+        if self.request.user.is_authenticated:
+            print(self.request.user)
+            book_q = Book.objects.filter().values_list('id', flat=True)
+            saved_book = SavedBook.objects.filter(book__id__in = book_q, person = self.request.user).values_list('book__id')
             
-            for s_book in saved_book:
-                s_book_title = s_book.book.title
-                list_a.append(s_book_title)
+            read_books = AddReadBook.objects.filter(user = self.request.user).values_list('title', flat=True)
+            book_category = Book.objects.all()
+            
+            exc = Book.objects.exclude(title__in = read_books).exclude(id__in = saved_book)
 
-            for r_book in read_books:
-                r_book_title = r_book.title
-                list_a.append(r_book_title)
-            exc = Book.objects.exclude(title__in = list_a)
-            print("Books" + str(exc))
-
+            context['book'] = exc
+            context['book_category'] = book_category
         else:
-            exc = Book.objects.all()
-
-        context['book'] = exc
-        context['book_category'] = book_category
+             context['book'] = Book.objects.all()
         return context
 
 
@@ -128,27 +119,26 @@ class Search(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        saved_book = SavedBook.objects.filter(person = self.request.user)
-        read_books = AddReadBook.objects.filter(user = self.request.user)
-
-        if saved_book or read_books:
+        if self.request.user.is_authenticated:
+            print(self.request.user)
+            for i in self.object_list:
+                obj_title = i
+            book_q = Book.objects.filter().values_list('id', flat=True)
+            saved_book = SavedBook.objects.filter(book__id__in = book_q, person = self.request.user).values_list('book__id')
             
-            for s_book in saved_book:
-                s_book_title = s_book.book.title
-                list_a.append(s_book_title)
+            read_books = AddReadBook.objects.filter(user = self.request.user).values_list('title', flat=True)
+            
+            
+            exc = Book.objects.filter(title__icontains = self.q).exclude(title__in = read_books).exclude(id__in = saved_book)
 
-            for r_book in read_books:
-                r_book_title = r_book.title
-                list_a.append(r_book_title)
-            exc = Book.objects.filter(title__icontains = self.q).exclude(title__in = list_a)
-
+            context['result'] = exc
+ 
         else:
-            exc = Book.objects.all()
+             context['result'] = self.object_list
      
  
         for i in self.object_list:
-            print(i)
-            if str(i) in list_a:
+            if str(i) in exc:
                 messages.info(self.request, "Book that you searched is either saved or read by you try searching it in 'Saved' or 'Read' link in side menu ")
                 break
 
@@ -189,18 +179,20 @@ class Saved(LoginRequiredMixin, ListView):
     template_name = 'library_app/saved.html'
     def get_queryset(self):
         self.q = self.request.GET.get('search')
-        ss_objects = SavedBook.objects.values_list('book', flat=True)
-        s_objects = Book.objects.filter(title__icontains = self.q)
-        if s_objects in ss_objects:
-            object_list = s_objects
+        if self.q:
+            book_q = Book.objects.filter(title__icontains = self.q).values_list('id', flat=True)
+            ss_objects = SavedBook.objects.filter(book__id__in = book_q, person = self.request.user)
+            object_list = ss_objects
+        
         else:
-            object_list = "Not found"
+            object_list = SavedBook.objects.filter(person = self.request.user)
         return object_list
+            
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
-        books = SavedBook.objects.filter(person = self.request.user)
-        context['searched_data'] = self.object_list
-        context['saved_books'] = books
+
+        context['object_list'] = self.object_list
+
         
         return context
 

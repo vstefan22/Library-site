@@ -17,76 +17,44 @@
         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
         <button class="btn btn-outline-success" type="submit">Search for read books</button>
     </form>
-    {%if searched_data%}
-    <h1 style="text-align: center;"> Searched results</h1>
-    {%for book in searched_data%}
-    <div class="" style="margin: 10px;">
+
+    {% include 'library_app/messages.html' %}
+    <div class="row">
+
+        {% for i in object_list%}
+
         <div class="col-sm-2" style="margin: 20px;">
+            <a href="{% url 'book' i.book.title %}" class="text-decoration-none" style="color: black;">
+
+                <div class="card text-reset" style="width: 18rem;">
+
+                    <h5 class="card-title">{{i.book.title}}</h5>
 
 
-            <div class="card text-reset" style="width: 18rem;">
 
-                <h5 class="card-title">{{book.title}}</h5>
+                    <div class="card-body">
+                        <p class="card-text">{{i.book.description|slice:255}}...</p>
+                    </div>
 
-                <img class="card-img-top" src="{{i.book.image.url}}" alt="Card image cap">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">{{i.book.author}}</li>
+                    </ul>
 
-                <div class="card-body">
-                    <p class="card-text">{{i.book.description|slice:255}}...</p>
+                    <div class="card-body">
+                        <p>Genre:{{i.book.category}}</p>
+                        <p>Language: {{i.book.language}}</p>
+
+
+                    </div>
                 </div>
-
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">{{i.book.author}}</li>
-                </ul>
-
-                <div class="card-body">
-                    <p>Genre:{{i.book.category}}</p>
-                    <p>Language: {{i.book.language}}</p>
-
-                    I have read this book
-
-                </div>
-            </div>
-
+            </a>
         </div>
         {%endfor%}
-        {%else%}
-        <h1 style="text-align: center;">Saved books</h1>
-        {% include 'library_app/messages.html' %}
-        <div class="row">
-            {% for i in saved_books%}
-            <div class="col-sm-2" style="margin: 20px;">
 
-                <a href="{% url 'book' i.book.title%}" class="text-decoration-none" style="color: black;">
-                    <div class="card text-reset" style="width: 18rem;">
+    </div>
 
-                        <h5 class="card-title">{{i.book.title}}</h5>
 
-                        <img class="card-img-top" src="{{i.book.image.url}}" alt="Card image cap">
-
-                        <div class="card-body">
-                            <p class="card-text">{{i.book.description|slice:255}}...</p>
-                        </div>
-
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">{{i.book.author}}</li>
-                        </ul>
-
-                        <div class="card-body">
-                            <p>Genre:{{i.book.category}}</p>
-                            <p>Language: {{i.book.language}}</p>
-
-                            <p><a href=" {% url 'add_read_book' i.book.title %}">I have read this book
-                                </a></p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            {%endfor%}
-
-        </div>
-        {%endif%}
-
-        {%endblock%}
+    {%endblock%}
 </body>
 
 </html>
