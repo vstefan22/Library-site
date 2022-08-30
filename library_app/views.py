@@ -1,4 +1,3 @@
-from turtle import title
 from django.views.generic import ListView, CreateView, DetailView, FormView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
@@ -13,8 +12,7 @@ from .models import Book, Person
 from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm, EditProfileForm
 
 
-list_a = []
-exc = Book.objects.exclude(title__in = list_a)
+
 
 # Home page
 class ListOfBooks(ListView):
@@ -24,7 +22,6 @@ class ListOfBooks(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
-            print(self.request.user)
             book_q = Book.objects.filter().values_list('id', flat=True)
             saved_book = SavedBook.objects.filter(book__id__in = book_q, person = self.request.user).values_list('book__id')
             
@@ -120,7 +117,6 @@ class Search(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
-            print(self.request.user)
             for i in self.object_list:
                 obj_title = i
             book_q = Book.objects.filter().values_list('id', flat=True)
@@ -180,18 +176,23 @@ class Saved(LoginRequiredMixin, ListView):
     def get_queryset(self):
         self.q = self.request.GET.get('search')
         if self.q:
+            read_book = AddReadBook.objects.filter(user = self.request.user).values_list('title', flat=True)
             book_q = Book.objects.filter(title__icontains = self.q).values_list('id', flat=True)
-            ss_objects = SavedBook.objects.filter(book__id__in = book_q, person = self.request.user)
+            ss_objects = SavedBook.objects.filter(book__id__in = book_q, person = self.request.user).exclude(book__title__in = self.read_book)
             object_list = ss_objects
         
         else:
-            object_list = SavedBook.objects.filter(person = self.request.user)
+            read_book = AddReadBook.objects.filter(user = self.request.user).values_list('title', flat=True)
+            object_list = SavedBook.objects.filter(person = self.request.user).exclude(book__title__in = read_book)
+            if not object_list:
+                messages.info(self.request, 'Congratulations! You read every book that you saved!')
+            
         return object_list
             
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
-
         context['object_list'] = self.object_list
+        
 
         
         return context

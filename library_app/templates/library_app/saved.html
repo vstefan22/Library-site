@@ -18,7 +18,7 @@
         <button class="btn btn-outline-success" type="submit">Search for read books</button>
     </form>
 
-    {% include 'library_app/messages.html' %}
+
     <div class="row">
 
         {% for i in object_list%}
@@ -29,9 +29,6 @@
                 <div class="card text-reset" style="width: 18rem;">
 
                     <h5 class="card-title">{{i.book.title}}</h5>
-
-
-
                     <div class="card-body">
                         <p class="card-text">{{i.book.description|slice:255}}...</p>
                     </div>
@@ -43,13 +40,16 @@
                     <div class="card-body">
                         <p>Genre:{{i.book.category}}</p>
                         <p>Language: {{i.book.language}}</p>
-
+                        <p><a href=" {% url 'add_read_book' i.book.title %}">I have read this book
+                            </a></p>
 
                     </div>
                 </div>
             </a>
         </div>
         {%endfor%}
+
+        {% include 'library_app/messages.html' %}
 
     </div>
 
