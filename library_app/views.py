@@ -1,7 +1,10 @@
 from django.views.generic import ListView, CreateView, DetailView, FormView, UpdateView
+from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
+from django.shortcuts import HttpResponseRedirect
+from django.http import Http404
 from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -9,7 +12,7 @@ from django.contrib import messages
 
 from .models import AddReadBook, SavedBook
 from .models import Book, Person
-from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm, EditProfileForm
+from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm, EditProfileForm, EditBookForm
 
 
 
@@ -32,8 +35,10 @@ class ListOfBooks(ListView):
 
             context['book'] = exc
             context['book_category'] = book_category
+            context['user'] = Book.objects.filter(user = self.request.user)
         else:
              context['book'] = Book.objects.all()
+             
         return context
 
 
@@ -81,6 +86,18 @@ class AddBookView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
+class EditBook(LoginRequiredMixin, UpdateView):
+    template_name = 'library_app/edit_book.html'
+    model = Book
+    form_class = EditBookForm
+    success_url = '/home/'
+    slug_field = 'title'
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+
+
 class AddReadBookView(LoginRequiredMixin, CreateView):
     model = AddReadBook
     form_class = AddReadBookForm
@@ -96,6 +113,31 @@ class AddReadBookView(LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['title'] = self.kwargs['t']
         return context
+
+class RemoveSavedBook(LoginRequiredMixin, DeleteView):
+    model = SavedBook
+    slug_field = 'book__title'
+    success_url = reverse_lazy('index')
+    def get_object(self, queryset = None):
+        if queryset is None:
+            queryset = self.get_queryset()
+
+        user = self.request.user
+        book = self.kwargs['slug']
+        queryset = SavedBook.objects.filter(person = user, book__title = book)
+        if not queryset:
+            raise Http404
+        context = {'user':user, 'book':book}
+        return context
+
+    def delete(self, request, *args, **kwargs):
+        user = self.request.user
+        book = self.kwargs['slug']
+        saved_book_delete = SavedBook.objects.filter(person = user, book__title = book)
+        saved_book_delete.delete()
+        return HttpResponseRedirect(reverse('index', ))
+    
+
 
 
 # Searching book
@@ -147,7 +189,11 @@ class ReadBookDetail(LoginRequiredMixin, DetailView):
     model = AddReadBook
     template_name = 'library_app/detail_read_book.html'
     slug_field = 'title'
-    context_object_name = 'book'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['book'] = AddReadBook.objects.filter(user = self.request.user, title = self.kwargs['slug'])
+        return context
 
 
 class ReadBooksList(LoginRequiredMixin, ListView):
@@ -157,7 +203,7 @@ class ReadBooksList(LoginRequiredMixin, ListView):
         self.q = self.request.GET.get('search')
 
         if self.q:
-            object_list = self.model.objects.filter(title__icontains = self.q)
+            object_list = self.model.objects.filter(user = self.request.user, title__icontains = self.q)
 
         else:
             object_list = self.model.objects.none()

@@ -86,6 +86,9 @@
                                         <a href=" {% url 'save' i.title %}">Save book</a>
                                     </button>
                                 </form>
+                                {% if user %}
+                                <a href=" {% url 'edit_book' i.title %}">Edit book</a>
+                                {%endif%}
 
                             </div>
                         </div>

@@ -13,17 +13,20 @@
 
     {%block content%}
     {%if book%}
+    {%for i in book%}
     <div style="margin: 20px; font-size: 18px;" class="row">
-        <h1 class="card-title " style="text-align: center;">{{book.title}}</h1>
+        <h1 class="card-title " style="text-align: center;">{{i.title}}</h1>
         <div class=" col-lg-7 pt-4 pt-lg-0">
             <div style="margin: 10px;">
                 <h3>Your description of the book:</h3>
-                <p style="margin: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;{{book.describe}}</p>
-                <p>Started reading: {{book.started_reading}}</p>
-                <p>Finished reading: {{book.finished_reading}}</p>
+                <p style="margin: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;{{i.describe}}</p>
+                <p>Started reading: {{i.started_reading}}</p>
+                <p>Finished reading: {{i.finished_reading}}</p>
             </div>
         </div>
     </div>
+    {%endfor%}
+
     {%endif%}
     {%endblock%}
 </body>
