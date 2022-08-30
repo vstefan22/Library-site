@@ -138,7 +138,28 @@ class RemoveSavedBook(LoginRequiredMixin, DeleteView):
         return HttpResponseRedirect(reverse('index', ))
     
 
+class RemoveReadBook(LoginRequiredMixin, DeleteView):
+    model = AddReadBook
+    slug_field = 'title'
+    success_url = reverse_lazy('index')
+    def get_object(self, queryset = None):
+        if queryset is None:
+            queryset = self.get_queryset()
 
+        user = self.request.user
+        book = self.kwargs['slug']
+        queryset = AddReadBook.objects.filter(user = user, title = book)
+        if not queryset:
+            raise Http404
+        context = {'user':user, 'book':book}
+        return context
+
+    def delete(self, request, *args, **kwargs):
+        user = self.request.user
+        book = self.kwargs['slug']
+        saved_book_delete = AddReadBook.objects.filter(user = user, title = book)
+        saved_book_delete.delete()
+        return HttpResponseRedirect(reverse('index', ))
 
 # Searching book
 class Search(ListView):

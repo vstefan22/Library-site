@@ -38,9 +38,8 @@
                     <div class="card-body">
                         <p>Genre:{{i.category}}</p>
                         <p>Language: {{i.language}}</p>
-
-
                     </div>
+                    <p><a href="{% url 'remove_read_book' i.title %}">REMOVE</a></p>
                 </div>
             </a>
         </div>

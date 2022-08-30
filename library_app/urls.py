@@ -15,6 +15,7 @@ urlpatterns = [
     path('save/<slug:title>/', views.Save.as_view(), name = 'save'),
     path('edit_book/<slug:slug>/', views.EditBook.as_view(), name = 'edit_book'),
     path('remove_saved_book/<slug:slug>/', views.RemoveSavedBook.as_view(), name = 'remove_saved_book'),
+    path('remove_read_book/<slug:slug>/', views.RemoveReadBook.as_view(), name = 'remove_read_book'),
 
     # User account functionality
     path('profile/', views.Profile.as_view(), name = 'profile'),
