@@ -7,13 +7,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book detail | {{book.title}}</title>
+
 </head>
 
 <body>
 
     {%block content%}
     <div style="margin: 20px; font-size: 18px;" class="row">
-        <h1 class="card-title " style="text-align: center;">{{book.title}}</h1>
+        <h1 class="card-title" style="text-align: center;">{{book.title}}</h1>
+
+        <h1 style=" text-align: right; ">Last viewed:</h1>
+
+
         <h4>Book image:</h4>
 
         <div class=" col-lg-7 pt-4 pt-lg-0">
@@ -24,7 +29,13 @@
                 <p style="margin: 10px;">{{book.description}}</p>
             </div>
         </div>
-
+        <div class="col-sm">
+            <a href="{% url 'book' book.title%}" class="text-decoration-none" style="color: black;">
+                <h3 class="card-title" style="text-align: right; margin-right: 120px;">{{book.title}}</h3>
+                <img class="float-end imgshadow" src="{{book.image.url}}" alt="Card image cap"
+                    style="width: 200px; height: 200px; ">
+            </a>
+        </div>
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
                 Author: &nbsp;{{book.author}}
@@ -36,7 +47,7 @@
             <p>Language: &nbsp;{{book.language}}</p>
             <p style="margin: 10px;">This book is read {{book.read_book_count}} times by different users.</p>
         </div>
-        <h2>Add comment</h2>
+
         <form method='post'>
             {%csrf_token%}
 
@@ -47,8 +58,7 @@
                             <div class="card">
                                 <div class="card-footer">
                                     <div class=" d-flex flex-start w-100">
-                                        <img class="rounded-circle shadow-1-strong me-3"
-                                            src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(19).webp"
+                                        <img class="rounded-circle shadow-1-strong me-3" src="{{user.profile_pic.url}}"
                                             alt="avatar" width="40" height="40" />
                                         <div class="form-outline">
                                             {{form.as_p}}
@@ -96,13 +106,7 @@
                                     </div>
                                 </div>
                             </div>
-
-
-
                             <hr class="my-0" style="height: 1px;" />
-
-
-
                         </div>
                     </div>
                     {%endfor%}

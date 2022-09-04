@@ -1,3 +1,4 @@
+
 from django.views.generic import ListView, CreateView, DetailView, FormView, UpdateView, RedirectView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -31,7 +32,7 @@ class ListOfBooks(ListView):
             saved_book = SavedBook.objects.filter(book__id__in = book_q, person = self.request.user).values_list('book__id')
             
             read_books = AddReadBook.objects.filter(user = self.request.user).values_list('title', flat=True)
-            book_category = Book.objects.all()
+            book_category = Book.objects.all().distinct('category')
             
             exc = Book.objects.exclude(title__in = read_books).exclude(id__in = saved_book)
 
@@ -62,14 +63,18 @@ class BookDetail(DetailView, CreateView, RedirectView):
         form.instance.user = my_p
         form.instance.book = title
         return super().form_valid(form)
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         book = Book.objects.filter(title = self.kwargs['slug'])
+        user = Person.objects.get(profile = self.request.user)
         for i in book:
             title = i
         comment_show = Comment.objects.filter(book = title)
+        comment_count = Comment.objects.filter(book = title).count()
         context['comments'] = comment_show
+        context['user'] = user
+        context['comment_count'] = comment_count
         return context
  
     
