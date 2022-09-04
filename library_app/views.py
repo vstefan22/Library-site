@@ -114,6 +114,11 @@ class AddReadBookView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         form.instance.title = self.kwargs['t']
+        read_books_count = Book.objects.values_list('read_book_count', flat=True)
+        for i in read_books_count:
+            i += 1
+        
+        read_books = Book.objects.filter().update(read_book_count = i)
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -166,6 +171,11 @@ class RemoveReadBook(LoginRequiredMixin, DeleteView):
         book = self.kwargs['slug']
         saved_book_delete = AddReadBook.objects.filter(user = user, title = book)
         saved_book_delete.delete()
+        read_books_count = Book.objects.values_list('read_book_count', flat=True)
+        for i in read_books_count:
+            i -= 1
+        
+        read_books = Book.objects.filter().update(read_book_count = i)
         return HttpResponseRedirect(reverse('index', ))
 
 # Searching book
