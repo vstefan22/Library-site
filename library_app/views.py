@@ -287,6 +287,7 @@ class Profile(LoginRequiredMixin, ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        added_books = Book.objects.filter(user = self.request.user)
         account = Person.objects.filter(profile = self.request.user)
         read_books = AddReadBook.objects.filter(user = self.request.user)[:3]
         read_books_count = AddReadBook.objects.filter(user = self.request.user).count()
@@ -302,6 +303,15 @@ class Profile(LoginRequiredMixin, ListView):
         return context
 
 
+class AddedBooks(ListView):
+    model = Book
+    template_name = 'library_app/added_books.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        added_books = Book.objects.filter(user = self.request.user)
+        context['added_books'] = added_books
+        return context
 # Log in functionality
 class Login(LoginView):
     template_name = 'library_app/login.html'

@@ -24,6 +24,7 @@ urlpatterns = [
     path('register/', views.RegisterPage.as_view(), name = 'register'),
     path('create_profile/', views.CreateProfile.as_view(), name = 'create_profile'),
     path('edit_profile/<int:pk>/', views.EditProfile.as_view(), name = 'edit_profile'),
+    path('added_books/', views.AddedBooks.as_view(), name = 'added_books'),
    
 
 ]
