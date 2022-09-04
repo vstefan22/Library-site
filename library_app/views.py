@@ -1,3 +1,5 @@
+from operator import add
+from os import read
 from django.views.generic import ListView, CreateView, DetailView, FormView, UpdateView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -83,6 +85,11 @@ class AddBookView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
+        added_books_count = Person.objects.filter(profile = self.request.user).values_list('added_books_count', flat=True)
+        for i in added_books_count:
+            i += 1
+        
+        update_added_books = Person.objects.filter(profile = self.request.user).update(added_books_count = i)
         return super().form_valid(form)
 
 
@@ -287,16 +294,43 @@ class Profile(LoginRequiredMixin, ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        added_books = Book.objects.filter(user = self.request.user)
+        added_books_count = Person.objects.filter(profile = self.request.user).values_list('added_books_count', flat=True)
+        read_books_count = AddReadBook.objects.filter(user = self.request.user).count()
+        print(read_books_count)
+        if read_books_count == 1 or i < 5:
+            context['starter'] = 1
+        if read_books_count > 5:
+            context['junior_reader'] = 5
+        if read_books_count > 15:
+            context['informed'] = 15
+        if read_books_count > 30:
+            context['educated'] = 30
+        if read_books_count > 50:
+            context['knowledgeable'] = 50
+        if read_books_count > 75:
+            context['greate_reader'] = 75
+        if read_books_count > 100:
+            context['genius'] = 100
+        for i in added_books_count:
+            
+            if i == 1 or i<5:
+                context['junior'] = 1
+            if i > 5:
+                context['reader'] = 2
+            if i > 15:
+                context['experienced_reader'] = 3
+            if i > 30:
+                context['genius'] = 4
         account = Person.objects.filter(profile = self.request.user)
         read_books = AddReadBook.objects.filter(user = self.request.user)[:3]
-        read_books_count = AddReadBook.objects.filter(user = self.request.user).count()
+        
         profile = User.objects.all()
 
         if account:
             context['person'] = account
             context['read_books'] = read_books
             context['read_books_count'] = read_books_count
+
         else:
             context['profile'] = profile
             

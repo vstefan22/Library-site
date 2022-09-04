@@ -33,7 +33,10 @@
                                         Edit profile
                                     </a>
                                 </button>
+
                             </div>
+
+
 
                             <div class="ms-3" style="margin-top: 130px;">
                                 <h5>{{user.first_name}} {{user.last_name}} </h5>
@@ -50,10 +53,13 @@
                             {%else%}
 
                             {%endif%}
-
-
+                        </div>
+                        <div class="ms-3">
+                            <p>Medals: {{junior}}{{reader}}{{experienced_reader}}{{genius}}{{starter}}{{junior_reader}}
+                                {{informed}}{{educated}}{{knowledgeable}}{{greate_reader}}{{genius}}</p>
                         </div>
                         <div class="p-4 text-black" style="background-color: #f8f9fa;">
+
                             <div class="d-flex justify-content-end text-center py-1">
                                 <div>
                                     <p class="small text-muted mb-0">Read books: {{read_books_count}}</p>
@@ -62,7 +68,7 @@
 
                             <div class="d-flex justify-content-end text-center py-1">
                                 <div>
-                                    <p class="small text-muted mb-0">Added books: {{read_books_count}}</p>
+                                    <p class="small text-muted mb-0">Added books: {{info.added_books_count}}</p>
                                 </div>
                             </div>
                         </div>
