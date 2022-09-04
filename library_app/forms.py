@@ -1,3 +1,4 @@
+from dataclasses import field
 from django import forms
 from django.forms import ModelForm
 from django.contrib.auth.models import User
@@ -18,7 +19,13 @@ class AddBook(ModelForm):
             'published_date':forms.DateInput(attrs={'placeholder': 'e.g. 1583-01-01'}),
 
         }
-
+class CommentForm(ModelForm):
+    class Meta:
+        model = models.Comment
+        fields = ['comment']
+        widgets = {
+            'comment':forms.Textarea(attrs={'rows':4, 'cols':120})
+        }
 
 class EditBookForm(ModelForm):
       class Meta:

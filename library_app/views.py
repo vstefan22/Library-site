@@ -1,6 +1,4 @@
-from operator import add
-from os import read
-from django.views.generic import ListView, CreateView, DetailView, FormView, UpdateView
+from django.views.generic import ListView, CreateView, DetailView, FormView, UpdateView, RedirectView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
@@ -10,11 +8,13 @@ from django.http import Http404
 from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.http import HttpResponseRedirect
+from django.urls import resolve
+   
 
-
-from .models import AddReadBook, SavedBook
+from .models import AddReadBook, SavedBook, Comment
 from .models import Book, Person
-from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm, EditProfileForm, EditBookForm
+from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm, EditProfileForm, EditBookForm, CommentForm
 
 
 
@@ -45,12 +45,34 @@ class ListOfBooks(ListView):
 
 
 # Single page for book
-class BookDetail(DetailView):
+class BookDetail(DetailView, CreateView, RedirectView):
     model = Book
+    form_class = CommentForm
     context_object_name = 'book'
     slug_field = 'title'
+    success_url = './'
+    
+    
     template_name = 'library_app/book.html'
+    def form_valid(self, form):
+        book = Book.objects.filter(title = self.kwargs['slug'])
+        for i in book:
+            title = i
+        my_p = Person.objects.get(profile = self.request.user)
+        form.instance.user = my_p
+        form.instance.book = title
+        return super().form_valid(form)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        book = Book.objects.filter(title = self.kwargs['slug'])
+        for i in book:
+            title = i
+        comment_show = Comment.objects.filter(book = title)
+        context['comments'] = comment_show
+        return context
+ 
+    
 
 # Functionlity for genre search from home page
 class GenreList(ListView):

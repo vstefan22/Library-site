@@ -38,6 +38,13 @@ class Book(models.Model):
         return self.title
 
 
+class Comment(models.Model):
+    user = models.ForeignKey(Person, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    comment = models.TextField()
+    date = models.DateField(auto_now_add=True)
+
+
 
 class SavedBook(models.Model):
     person = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
