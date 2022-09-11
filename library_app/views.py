@@ -2,22 +2,18 @@
 from django.views.generic import ListView, CreateView, DetailView, FormView, UpdateView, RedirectView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView
-from django.urls import reverse_lazy, reverse
-from django.shortcuts import HttpResponseRedirect
-from django.http import Http404
-from django.contrib.auth import login
 from django.contrib.auth.models import User
+from django.contrib.auth.views import LoginView
+from django.contrib.auth import login
 from django.contrib import messages
+from django.urls import reverse_lazy, reverse
+from django.http import Http404
 from django.http import HttpResponseRedirect
-from django.urls import resolve
+from django.shortcuts import HttpResponseRedirect
    
 
-from .models import AddReadBook, SavedBook, Comment
-from .models import Book, Person
+from .models import Book, Person, AddReadBook, SavedBook, Comment
 from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm, EditProfileForm, EditBookForm, CommentForm
-
-
 
 
 # Home page
@@ -28,7 +24,7 @@ class ListOfBooks(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
-            book_q = Book.objects.filter().values_list('id', flat=True)
+            book_q = Book.objects.filter().values_list('id', flat = True)
             saved_book = SavedBook.objects.filter(book__id__in = book_q, person = self.request.user).values_list('book__id')
             
             read_books = AddReadBook.objects.filter(user = self.request.user).values_list('title', flat=True)
@@ -55,28 +51,33 @@ class BookDetail(DetailView, CreateView, RedirectView):
     
     
     template_name = 'library_app/book.html'
+    
     def form_valid(self, form):
-        book = Book.objects.filter(title = self.kwargs['slug'])
-        for i in book:
-            title = i
-        my_p = Person.objects.get(profile = self.request.user)
-        form.instance.user = my_p
-        form.instance.book = title
-        return super().form_valid(form)
+        if self.request.user.is_authenticated:
+            book = Book.objects.filter(title = self.kwargs['slug'])
+            for i in book:
+                title = i
+            my_p = Person.objects.get(profile = self.request.user)
+            form.instance.user = my_p
+            form.instance.book = title
+            return super().form_valid(form)
+
+            
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         book = Book.objects.filter(title = self.kwargs['slug'])
-        user = Person.objects.get(profile = self.request.user)
+        if self.request.user.is_authenticated:
+            user = Person.objects.get(profile = self.request.user)
+            context['user'] = user
         for i in book:
             title = i
         comment_show = Comment.objects.filter(book = title)
         comment_count = Comment.objects.filter(book = title).count()
         context['comments'] = comment_show
-        context['user'] = user
+        
         context['comment_count'] = comment_count
         return context
- 
     
 
 # Functionlity for genre search from home page
@@ -112,7 +113,7 @@ class AddBookView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        added_books_count = Person.objects.filter(profile = self.request.user).values_list('added_books_count', flat=True)
+        added_books_count = Person.objects.filter(profile = self.request.user).values_list('added_books_count', flat = True)
         for i in added_books_count:
             i += 1
         
@@ -141,7 +142,7 @@ class AddReadBookView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         form.instance.title = self.kwargs['t']
-        read_books_count = Book.objects.values_list('read_book_count', flat=True)
+        read_books_count = Book.objects.values_list('read_book_count', flat = True)
         for i in read_books_count:
             i += 1
         

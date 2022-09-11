@@ -24,7 +24,7 @@ class CommentForm(ModelForm):
         model = models.Comment
         fields = ['comment']
         widgets = {
-            'comment':forms.Textarea(attrs={'rows':4, 'cols':120, 'placeholder': 'Add comment'})
+            'comment':forms.Textarea(attrs = {'rows':4, 'cols':120, 'placeholder': 'Add comment'})
         }
 
 class EditBookForm(ModelForm):
@@ -34,11 +34,11 @@ class EditBookForm(ModelForm):
         fields = ['image', 'title', 'description', 'language', 'category', 'published_date']
         widgets = {
             'image':forms.FileInput(),
-            'title':forms.TextInput(attrs={'placeholder': 'Title'}),
-            'description': forms.Textarea(attrs={'cols': 80, 'rows': 20}),
-            'language':forms.TextInput(attrs={'placeholder': 'Language'}),
-            'category':forms.TextInput(attrs={'placeholder': 'Genre'}),
-            'published_date':forms.DateInput(attrs={'placeholder': 'e.g. 1583-01-01'}),
+            'title':forms.TextInput(attrs = {'placeholder': 'Title'}),
+            'description': forms.Textarea(attrs = {'cols': 80, 'rows': 20}),
+            'language':forms.TextInput(attrs = {'placeholder': 'Language'}),
+            'category':forms.TextInput(attrs = {'placeholder': 'Genre'}),
+            'published_date':forms.DateInput(attrs = {'placeholder': 'e.g. 1583-01-01'}),
 
         }
 
@@ -48,8 +48,8 @@ class AddReadBookForm(ModelForm):
         fields = ['describe', 'started_reading', 'finished_reading']
         widgets = {
             
-            'started_reading':forms.DateInput(attrs={'placeholder': '  e.g. 2022-6-22'}),
-            'finished_reading':forms.DateInput(attrs={'placeholder': '  e.g. 2022-7-15'}),
+            'started_reading':forms.DateInput(attrs = {'placeholder': '  e.g. 2022-6-22'}),
+            'finished_reading':forms.DateInput(attrs = {'placeholder': '  e.g. 2022-7-15'}),
 
         }
         

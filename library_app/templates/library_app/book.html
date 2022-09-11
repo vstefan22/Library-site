@@ -47,7 +47,7 @@
             <p>Language: &nbsp;{{book.language}}</p>
             <p style="margin: 10px;">This book is read {{book.read_book_count}} times by different users.</p>
         </div>
-
+        {%if request.user.is_authenticated%}
         <form method='post'>
             {%csrf_token%}
 
@@ -75,6 +75,36 @@
                 </div>
             </section>
         </form>
+        {%else%}
+        <form>
+
+            <a href="{%url 'login'%}" style="color: black; text-decoration: none;">
+                <section>
+                    <div>
+                        <div>
+                            <div class="col-md-12 col-lg-10 col-xl-8">
+                                <div class="card">
+                                    <div class="card-footer">
+                                        <div class=" d-flex flex-start w-100">
+                                            <img class="rounded-circle shadow-1-strong me-3"
+                                                src="{{user.profile_pic.url}}" alt="" width="40" height="40" />
+                                            <div class="form-outline">
+                                                {{form.as_p}}
+                                            </div>
+                                        </div>
+                                        <div class="float-end mt-2 pt-1">
+                                            <button type="submit" class="btn btn-primary btn-sm">Post comment</button>
+                                            <button type="reset" class="btn btn-outline-primary btn-sm">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </a>
+        </form>
+        {%endif%}
         <h4 class="mb-0">Recent comments</h4>
         <hr class="my-0" style="height: 1px;" />
         <br>
