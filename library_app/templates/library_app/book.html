@@ -16,8 +16,6 @@
     <div style="margin: 20px; font-size: 18px;" class="row">
         <h1 class="card-title" style="text-align: center;">{{book.title}}</h1>
 
-        <h1 style=" text-align: right; ">Last viewed:</h1>
-
 
         <h4>Book image:</h4>
 
@@ -29,13 +27,8 @@
                 <p style="margin: 10px;">{{book.description}}</p>
             </div>
         </div>
-        <div class="col-sm">
-            <a href="{% url 'book' book.title%}" class="text-decoration-none" style="color: black;">
-                <h3 class="card-title" style="text-align: right; margin-right: 120px;">{{book.title}}</h3>
-                <img class="float-end imgshadow" src="{{book.image.url}}" alt="Card image cap"
-                    style="width: 200px; height: 200px; ">
-            </a>
-        </div>
+
+
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
                 Author: &nbsp;{{book.author}}
@@ -65,7 +58,8 @@
                                         </div>
                                     </div>
                                     <div class="float-end mt-2 pt-1">
-                                        <button type="submit" class="btn btn-primary btn-sm">Post comment</button>
+                                        <button type="submit" class="btn btn-primary btn-sm">Post
+                                            comment</button>
                                         <button type="reset" class="btn btn-outline-primary btn-sm">Cancel</button>
                                     </div>
                                 </div>
@@ -93,7 +87,8 @@
                                             </div>
                                         </div>
                                         <div class="float-end mt-2 pt-1">
-                                            <button type="submit" class="btn btn-primary btn-sm">Post comment</button>
+                                            <button type="submit" class="btn btn-primary btn-sm">Post
+                                                comment</button>
                                             <button type="reset" class="btn btn-outline-primary btn-sm">Cancel</button>
                                         </div>
                                     </div>
@@ -105,6 +100,19 @@
             </a>
         </form>
         {%endif%}
+        <div class="row row-cols-1" style="margin: 20px;">
+            <h2>Last viewed books:</h2>
+            {%for session_book in books_in_session%}
+            <div class="col" style="width: 150px; margin: 20px;">
+                <a href="{% url 'book' session_book.title%}" class="text-decoration-none" style="color: black;">
+                    <h3 class="card-title" style="text-align: center; font-size: 16px;">
+                        {{session_book.title}}</h3>
+                    <img class="float-end imgshadow" src="{{session_book.image.url}}" alt="Card image cap"
+                        style="width: 150px; height: 150px; ">
+                </a>
+            </div>
+            {%endfor%}
+        </div>
         <h4 class="mb-0">Recent comments</h4>
         <hr class="my-0" style="height: 1px;" />
         <br>

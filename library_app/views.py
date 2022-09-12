@@ -1,4 +1,5 @@
 
+from urllib import request
 from django.views.generic import ListView, CreateView, DetailView, FormView, UpdateView, RedirectView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -48,8 +49,6 @@ class BookDetail(DetailView, CreateView, RedirectView):
     context_object_name = 'book'
     slug_field = 'title'
     success_url = './'
-    
-    
     template_name = 'library_app/book.html'
     
     def form_valid(self, form):
@@ -62,23 +61,46 @@ class BookDetail(DetailView, CreateView, RedirectView):
             form.instance.book = title
             return super().form_valid(form)
 
-            
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         book = Book.objects.filter(title = self.kwargs['slug'])
+
+
         if self.request.user.is_authenticated:
             user = Person.objects.get(profile = self.request.user)
             context['user'] = user
         for i in book:
             title = i
+                                
+        # sesions 
+        current_book_id = Book.objects.filter(title = self.kwargs['slug']).values_list('id', flat = True)
+
+        for i in current_book_id:
+            crt = i
+
+
+        if 'recently_viewed_books' in self.request.session:
+            if crt in self.request.session['recently_viewed_books']:
+                self.request.session['recently_viewed_books'].remove(crt)
+            books_in_session = Book.objects.filter(pk__in = self.request.session['recently_viewed_books'])
+            context['books_in_session'] = books_in_session
+            self.request.session['recently_viewed_books'].insert(0, crt)
+            if (len(self.request.session['recently_viewed_books']))>5:
+                self.request.session['recently_viewed_books'].pop()
+        else:
+            self.request.session['recently_viewed_books'] = [crt]
+        
+        self.request.session.modified = True
+
+        
+        
         comment_show = Comment.objects.filter(book = title)
         comment_count = Comment.objects.filter(book = title).count()
         context['comments'] = comment_show
-        
         context['comment_count'] = comment_count
         return context
-    
+  
 
 # Functionlity for genre search from home page
 class GenreList(ListView):
