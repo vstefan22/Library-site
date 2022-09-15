@@ -10,4 +10,7 @@ urlpatterns = [
     path('', include('library_app.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += staticfiles_urlpatterns()
+urlpatterns +=[
+    path('api-auth/', include('rest_framework.urls')),
+]
 

@@ -1,5 +1,5 @@
 
-from urllib import request
+from gc import get_objects
 from django.views.generic import ListView, CreateView, DetailView, FormView, UpdateView, RedirectView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -10,8 +10,12 @@ from django.contrib import messages
 from django.urls import reverse_lazy, reverse
 from django.http import Http404
 from django.http import HttpResponseRedirect
-from django.shortcuts import HttpResponseRedirect
-   
+from django.shortcuts import HttpResponseRedirect, get_object_or_404
+
+from rest_framework import viewsets
+from rest_framework import permissions
+from .permissions import AuthorAccess
+from .serializers import BookSerializer
 
 from .models import Book, Person, AddReadBook, SavedBook, Comment
 from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm, EditProfileForm, EditBookForm, CommentForm
@@ -451,6 +455,31 @@ class EditProfile(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
+
+
+
+# REST API 
+class MultipleFieldLookupORMixin(object):
+
+    def get_object(self):
+        queryset = self.get_queryset()             # Get the base queryset
+        queryset = self.filter_queryset(queryset)  # Apply any filter backends
+        filter = {}
+        for field in self.lookup_fields:
+            try:                                  # Get the result with one or more fields.
+                filter[field] = self.kwargs[field]
+            except Exception:
+                pass
+       
+        
+        return queryset
+
+class BookViewSet(MultipleFieldLookupORMixin, viewsets.ModelViewSet):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    lookup_fields = ('title', 'author')
+
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, AuthorAccess]
         
 
 
