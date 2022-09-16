@@ -1,11 +1,12 @@
 from django.urls import path, include
 from django.contrib.auth.views import LogoutView
-from rest_framework.routers import DefaultRouter
+#from rest_framework.routers import DefaultRouter
 from . import views
 
-
+'''
 router = DefaultRouter()
 router.register(r'books', views.BookViewSet)
+'''
 
 urlpatterns = [
     path('home/', views.ListOfBooks.as_view(), name = 'index'),
@@ -32,5 +33,9 @@ urlpatterns = [
     path('added_books/', views.AddedBooks.as_view(), name = 'added_books'),
    
     # Rest api urls
-    path('library/api/books/', include(router.urls))
+    path('library/api/books/', views.BookList.as_view()),
+    path('library/api/books/<slug:name>/', views.BookDetail.as_view()),
+    path('library/api/authors/', views.BookAuthors.as_view()),
+    path('library/api/authors/<slug:author>/', views.AuthorDetails.as_view())
+
 ]

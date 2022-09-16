@@ -3,8 +3,16 @@ from dataclasses import field
 from rest_framework import serializers
 from .models import Book
 
-class BookSerializer(serializers.HyperlinkedModelSerializer):
+class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
-        fields = ['url', 'image', 'title', 'author', 'category', 'description', 'published_date', 'language', 'read_book_count']
+        fields = ['id', 'image', 'title', 'author', 'category', 'description', 'published_date', 'language', 'read_book_count']
 
+class AuthorSerializer(serializers.ModelSerializer):
+    titles = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Book
+        fields = ['author', 'titles']
+    def get_titles(self, book):
+        return list(Book.objects.filter(author = book.author).values_list('title', flat=True))

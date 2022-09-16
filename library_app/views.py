@@ -13,9 +13,16 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import HttpResponseRedirect, get_object_or_404
 
 from rest_framework import viewsets
+from .serializers import AuthorSerializer
 from rest_framework import permissions
+from rest_framework.views import APIView
+from django.http import Http404
+from rest_framework import mixins
+from rest_framework import generics
+from rest_framework.response import Response
 from .permissions import AuthorAccess
 from .serializers import BookSerializer
+from rest_framework import status
 
 from .models import Book, Person, AddReadBook, SavedBook, Comment
 from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm, EditProfileForm, EditBookForm, CommentForm
@@ -459,28 +466,59 @@ class EditProfile(LoginRequiredMixin, UpdateView):
 
 
 # REST API 
-class MultipleFieldLookupORMixin(object):
+class BookList(APIView):
+    def get(self, request, format = None):
+        books = Book.objects.all()
+        serializer = BookSerializer(books, many = True)
+        return Response(serializer.data)
+    
+    def post(self, request, format = None):
+        serializer = BookSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status = status.HTTP_201_CREATED)
 
-    def get_object(self):
-        queryset = self.get_queryset()             # Get the base queryset
-        queryset = self.filter_queryset(queryset)  # Apply any filter backends
-        filter = {}
-        for field in self.lookup_fields:
-            try:                                  # Get the result with one or more fields.
-                filter[field] = self.kwargs[field]
-            except Exception:
-                pass
-       
+
+class BookDetail(APIView):
+    def get_object(self, name):
+        try:
+            book = Book.objects.get(title = name)
+            return book
+        except:
+            raise Http404
+
+    def get(self, request, name, format = None):
+        book = self.get_object(name)
+        serializer = BookSerializer(book)
+        return Response(serializer.data)
+    
+    def put(self, request, name, format = None):
+        book = self.get_object(name)
+        serializer = BookSerializer(book, data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+
+    def delete(self ,request, name,   format = None):
+        book = self.get_object(name)
+        book.delete()
+        return Response(status = status.HTTP_204_NO_CONTENT)
+
+class BookAuthors(APIView):
+
+    def get(self, request):
+        author = Book.objects.distinct('author')
+        serializer = AuthorSerializer(author, many = True)
+        return Response(serializer.data)
+
+class AuthorDetails(APIView):
+    def get(self, request, author):
         
-        return queryset
-
-class BookViewSet(MultipleFieldLookupORMixin, viewsets.ModelViewSet):
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
-    lookup_fields = ('title', 'author')
-
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, AuthorAccess]
-        
+        author = Book.objects.filter(author = author)
+        serializer = AuthorSerializer(author, many = True)
+        print(serializer.data)
+        return Response(serializer.data)
 
 
     
