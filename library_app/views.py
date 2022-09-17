@@ -8,19 +8,17 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth import login
 from django.contrib import messages
 from django.urls import reverse_lazy, reverse
-from django.http import Http404
-from django.http import HttpResponseRedirect
-from django.shortcuts import HttpResponseRedirect, get_object_or_404
 
-from rest_framework import viewsets
+from django.shortcuts import HttpResponseRedirect
+
+
 from .serializers import AuthorSerializer
-from rest_framework import permissions
+
 from rest_framework.views import APIView
 from django.http import Http404
-from rest_framework import mixins
-from rest_framework import generics
+
 from rest_framework.response import Response
-from .permissions import AuthorAccess
+from .permissions import DetailPermission, PostPermission
 from .serializers import BookSerializer
 from rest_framework import status
 
@@ -356,6 +354,19 @@ class Save(LoginRequiredMixin, CreateView):
         messages.success(self.request, 'Book saved successfully!')
 
 
+class Publisher(DetailView):
+    model = Person
+    template_name = 'library_app/profile_publisher.html'
+    slug_field = 'profile'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_publisher = Person.objects.filter(profile = self.kwargs['pk'])
+        for i in user_publisher:
+            print(i.profile)
+        context['user_publisher'] = user_publisher
+
+        return context
+
 # User functionalities 
 
 # Profile page with user data
@@ -368,7 +379,7 @@ class Profile(LoginRequiredMixin, ListView):
         added_books_count = Person.objects.filter(profile = self.request.user).values_list('added_books_count', flat=True)
         read_books_count = AddReadBook.objects.filter(user = self.request.user).count()
         print(read_books_count)
-        if read_books_count == 1 or i < 5:
+        if read_books_count == 1 or read_books_count < 5:
             context['starter'] = 1
         if read_books_count > 5:
             context['junior_reader'] = 5
@@ -464,49 +475,26 @@ class EditProfile(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
+# REST API
 
-# REST API 
-class BookList(APIView):
-    def get(self, request, format = None):
-        books = Book.objects.all()
-        serializer = BookSerializer(books, many = True)
-        return Response(serializer.data)
+from rest_framework import generics
+
+class BookApiList(generics.ListCreateAPIView):
     
-    def post(self, request, format = None):
-        serializer = BookSerializer(data = request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status = status.HTTP_201_CREATED)
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [PostPermission]
 
 
-class BookDetail(APIView):
-    def get_object(self, name):
-        try:
-            book = Book.objects.get(title = name)
-            return book
-        except:
-            raise Http404
+from rest_framework import generics
 
-    def get(self, request, name, format = None):
-        book = self.get_object(name)
-        serializer = BookSerializer(book)
-        return Response(serializer.data)
-    
-    def put(self, request, name, format = None):
-        book = self.get_object(name)
-        serializer = BookSerializer(book, data = request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
-
-    def delete(self ,request, name,   format = None):
-        book = self.get_object(name)
-        book.delete()
-        return Response(status = status.HTTP_204_NO_CONTENT)
+class BookApiDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [DetailPermission]
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    lookup_field = 'title'
 
 class BookAuthors(APIView):
-
     def get(self, request):
         author = Book.objects.distinct('author')
         serializer = AuthorSerializer(author, many = True)
@@ -514,8 +502,7 @@ class BookAuthors(APIView):
 
 class AuthorDetails(APIView):
     def get(self, request, author):
-        
-        author = Book.objects.filter(author = author)
+        author = Book.objects.filter(author = author).distinct('author')
         serializer = AuthorSerializer(author, many = True)
         print(serializer.data)
         return Response(serializer.data)

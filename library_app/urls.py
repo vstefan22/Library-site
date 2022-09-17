@@ -1,12 +1,8 @@
 from django.urls import path, include
 from django.contrib.auth.views import LogoutView
-#from rest_framework.routers import DefaultRouter
+from rest_framework.urlpatterns import format_suffix_patterns
 from . import views
 
-'''
-router = DefaultRouter()
-router.register(r'books', views.BookViewSet)
-'''
 
 urlpatterns = [
     path('home/', views.ListOfBooks.as_view(), name = 'index'),
@@ -22,6 +18,7 @@ urlpatterns = [
     path('edit_book/<slug:slug>/', views.EditBook.as_view(), name = 'edit_book'),
     path('remove_saved_book/<slug:slug>/', views.RemoveSavedBook.as_view(), name = 'remove_saved_book'),
     path('remove_read_book/<slug:slug>/', views.RemoveReadBook.as_view(), name = 'remove_read_book'),
+    path('profile/<int:pk>/', views.Publisher.as_view(), name  = 'publisher'),
 
     # User account urls
     path('profile/', views.Profile.as_view(), name = 'profile'),
@@ -33,9 +30,11 @@ urlpatterns = [
     path('added_books/', views.AddedBooks.as_view(), name = 'added_books'),
    
     # Rest api urls
-    path('library/api/books/', views.BookList.as_view()),
-    path('library/api/books/<slug:name>/', views.BookDetail.as_view()),
-    path('library/api/authors/', views.BookAuthors.as_view()),
-    path('library/api/authors/<slug:author>/', views.AuthorDetails.as_view())
+    path('library/api/books/', views.BookApiList.as_view(), name = 'api_list'),
+    path('library/api/books/<slug:title>/', views.BookApiDetail.as_view(), name = 'book_api_detail'),
+    path('library/api/authors/', views.BookAuthors.as_view(), name = 'authors'),
+    path('library/api/authors/<slug:author>/', views.AuthorDetails.as_view(), name = 'author_details'),
 
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)

@@ -12,7 +12,7 @@ class AddReadBook(models.Model):
 
 class Person(models.Model):
     profile = models.OneToOneField(User, on_delete=models.CASCADE, null = True, blank = True)
-    profile_pic = models.ImageField(default='Nana.jpg', upload_to = 'images/', null = True, blank = True)
+    profile_pic = models.ImageField(default='download.jpg', upload_to = 'images/', null = True, blank = True)
     description = models.TextField(max_length = 950, null = True, blank = True)
     city = models.CharField(max_length = 100, null = True, blank = True)
     added_books_count = models.IntegerField(default = 0)
@@ -20,7 +20,7 @@ class Person(models.Model):
 
 class Book(models.Model):
     user = models.ForeignKey(User, on_delete = models.CASCADE, null = True, blank = True)
-    image = models.ImageField(default = "Nana.jpg", upload_to = 'images/', null = True, blank = True)
+    image = models.ImageField(default = "no_book_image_015.gif", upload_to = 'images/', null = True, blank = True)
     title = models.CharField(max_length = 150, unique = True)
     author = models.CharField(max_length = 100)
     category = models.CharField(max_length = 100)

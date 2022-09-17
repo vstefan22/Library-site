@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'library_app/base.html' %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | {{username}}</title>
+</head>
+
+<body>
+
+    {%block content%}
+
+
+    {%if person%}
+    {% for info in user_publisher%}
+
+    <h1>{{users.profile}}</h1>
+    <!--If user adds profile display his data-->
+    <section class="h-100 gradient-custom-2">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col col-lg-9 col-xl-7">
+                    <div class="card">
+                        <div class="rounded-top text-white d-flex flex-row"
+                            style="background-color: #000; height:200px;">
+                            <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px;">
+                                <img src="{{info.profile_pic.url}}" alt="Generic placeholder image"
+                                    class="img-fluid img-thumbnail mt-4 mb-2" style="width: 150px; z-index: 1">
+                            </div>
+
+
+
+                            <div class="ms-3" style="margin-top: 110px;">
+                                <h5>{{info.profile.first_name}} {{info.profile.last_name}} </h5>
+                                <h5>Username: {{info.profile.username}}</h5>
+
+                                <h5>City: {{info.city}}</h5>
+
+                            </div>
+
+                        </div>
+                        <div class="ms-3" style="margin-top: 130px;">
+
+                            {%if user.email%}
+                            <p>Email address: {{user.email}}</p>
+                            {%else%}
+
+                            {%endif%}
+                        </div>
+                        <div class="ms-3">
+                            <p>Medals: {{junior}}{{reader}}{{experienced_reader}}{{genius}}{{starter}}{{junior_reader}}
+                                {{informed}}{{educated}}{{knowledgeable}}{{greate_reader}}{{genius}}</p>
+                        </div>
+                        <div class="p-4 text-black" style="background-color: #f8f9fa;">
+
+                            <div class="d-flex justify-content-end text-center py-1">
+                                <div>
+                                    <p class="small text-muted mb-0">Read books: {{read_books_count}}</p>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end text-center py-1">
+                                <div>
+                                    <p class="small text-muted mb-0">Added books: {{info.added_books_count}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body p-4 text-black">
+                            <div class="mb-5">
+                                <p class="lead fw-normal mb-1">About</p>
+                                <div class="p-4" style="background-color: #f8f9fa;">
+                                    <p class="font-italic mb-1">{{info.description}}</p>
+                                </div>
+                            </div>
+                            <div class="mb-5">
+                                <p class="mb-0"><a href="{% url 'added_books' %}" class="text-muted">Added book by
+                                        {{user.username}}</a>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <p class="lead fw-normal mb-0">Recent books</p>
+                                <p class="mb-0"><a href="{% url 'read_books_list' %}" class="text-muted">Show all</a>
+                                </p>
+                            </div>
+                            <div class="row g-2">
+                                <!--Shows books that user has read-->
+
+                                <div class="col mb-2">
+                                    {% for book in read_books%}
+                                    <h2 style="text-align: center;">
+                                        <a href="{% url 'read_books_detail' book.title %}">{{book.title}}</a>
+                                    </h2>
+                                    {%endfor%}
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {%endfor%}
+    </section>
+    <!--If user doesn't have profile display user data-->
+    {%else%}
+    <section class="h-100 gradient-custom-2">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center h-100">
+                <div class="col col-lg-9 col-xl-7">
+                    <div class="card">
+                        <div class="rounded-top text-white d-flex flex-row"
+                            style="background-color: #ccc; height:300px;">
+                            <div class="" style="margin-top: 130px; margin-left: 10px;">
+                                <h5>Full name: {{user.first_name}} {{user.last_name}} </h5>
+                                <h5>Username: {{user.username}}</h5>
+                                <h5>Email: {{user.email}} </h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {%endif%}
+    {%endblock content%}
+
+</body>
+
+</html>
