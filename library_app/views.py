@@ -1,5 +1,7 @@
 
 from gc import get_objects
+import profile
+from turtle import update
 from django.views.generic import ListView, CreateView, DetailView, FormView, UpdateView, RedirectView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -360,12 +362,40 @@ class Publisher(DetailView):
     slug_field = 'profile'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user_publisher = Person.objects.filter(profile = self.kwargs['pk'])
-        for i in user_publisher:
+        profile_publisher = Person.objects.filter(profile = self.kwargs['pk'])
+        user_publisher = User.objects.filter(id = self.kwargs['pk'])
+        print()
+        for i in profile_publisher:
             print(i.profile)
-        context['user_publisher'] = user_publisher
+        following_count = Person.objects.filter(profile_id = self.kwargs['pk']).values_list('followers', flat = True).count()
+
+        context['user_publisher'] = profile_publisher
+        context['check_user'] = self.request.user == user_publisher
+        context['number_of_followers'] = following_count
+
 
         return context
+
+class Follow(CreateView):
+    model = Person
+    template_name = 'library_app/follow_profile_publisher.html'
+    slug_field = 'profile'
+    fields = ['followers']
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        followed_profile = User.objects.get(id = self.kwargs['pk'])
+        Person.objects.create(followers = followed_profile)
+        following_count = Person.objects.filter(profile_id = self.kwargs['pk']).values_list('followers', flat = True).count()
+        person = Person.objects.filter(profile_id = self.kwargs['pk'])
+        context['profile'] = followed_profile
+        context['person'] = person
+        context['number_of_followers'] = following_count
+        
+        return context
+
+
 
 # User functionalities 
 
@@ -405,6 +435,8 @@ class Profile(LoginRequiredMixin, ListView):
                 context['genius'] = 4
         account = Person.objects.filter(profile = self.request.user)
         read_books = AddReadBook.objects.filter(user = self.request.user)[:3]
+        following_count = Person.objects.filter(profile = self.request.user).values_list('followers', flat = True).count()
+
         
         profile = User.objects.all()
 
@@ -412,6 +444,9 @@ class Profile(LoginRequiredMixin, ListView):
             context['person'] = account
             context['read_books'] = read_books
             context['read_books_count'] = read_books_count
+            context['number_of_followers'] = following_count
+
+
 
         else:
             context['profile'] = profile

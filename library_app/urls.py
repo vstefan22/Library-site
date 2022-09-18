@@ -19,6 +19,7 @@ urlpatterns = [
     path('remove_saved_book/<slug:slug>/', views.RemoveSavedBook.as_view(), name = 'remove_saved_book'),
     path('remove_read_book/<slug:slug>/', views.RemoveReadBook.as_view(), name = 'remove_read_book'),
     path('profile/<int:pk>/', views.Publisher.as_view(), name  = 'publisher'),
+    path('follow/<int:pk>/', views.Follow.as_view(), name = 'follow'),
 
     # User account urls
     path('profile/', views.Profile.as_view(), name = 'profile'),

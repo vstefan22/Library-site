@@ -12,12 +12,7 @@
 <body>
 
     {%block content%}
-
-
-    {%if person%}
-    {% for info in user_publisher%}
-
-    <h1>{{users.profile}}</h1>
+    {% for info in person%}
     <!--If user adds profile display his data-->
     <section class="h-100 gradient-custom-2">
         <div class="container py-5 h-100">
@@ -30,28 +25,19 @@
                                 <img src="{{info.profile_pic.url}}" alt="Generic placeholder image"
                                     class="img-fluid img-thumbnail mt-4 mb-2" style="width: 150px; z-index: 1">
                             </div>
-                            {%if request.user != info.profile %}
-                            <button type="button" class="btn btn-outline-dark" data-mdb-ripple-color="dark"
-                                style="z-index: 1;">
-                                <a href="{% url 'follow' info.profile.id%}">
-                                    Follow
-                                </a>
-                            </button>
-                            {%endif%}
                             <div class="ms-3" style="margin-top: 110px;">
                                 <h5>{{info.profile.first_name}} {{info.profile.last_name}} </h5>
-                                <h5>Username: {{info.profile.username}}</h5>
+                                <h5>{{info.profile.username}}</h5>
 
-                                <h5>City: {{info.city}}</h5>
+                                <p>{{info.city}}</p>
 
                             </div>
+
                         </div>
                         <div class="ms-3" style="margin-top: 130px;">
-
-                            {%if user.email%}
-                            <p>Email address: {{user.email}}</p>
+                            {%if info.profile.email%}
+                            <p>Email address: {{info.profile.email}}</p>
                             {%else%}
-
                             {%endif%}
                             <p>Number of followers: {{number_of_followers}}</p>
                         </div>
@@ -107,29 +93,12 @@
             </div>
         </div>
     </section>
+
     {%endfor%}
     </section>
     <!--If user doesn't have profile display user data-->
-    {%else%}
-    <section class="h-100 gradient-custom-2">
-        <div class="container py-5 h-100">
-            <div class="row d-flex justify-content-center h-100">
-                <div class="col col-lg-9 col-xl-7">
-                    <div class="card">
-                        <div class="rounded-top text-white d-flex flex-row"
-                            style="background-color: #ccc; height:300px;">
-                            <div class="" style="margin-top: 130px; margin-left: 10px;">
-                                <h5>Full name: {{user.first_name}} {{user.last_name}} </h5>
-                                <h5>Username: {{user.username}}</h5>
-                                <h5>Email: {{user.email}} </h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    {%endif%}
+
+
     {%endblock content%}
 
 </body>

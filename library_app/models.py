@@ -16,6 +16,7 @@ class Person(models.Model):
     description = models.TextField(max_length = 950, null = True, blank = True)
     city = models.CharField(max_length = 100, null = True, blank = True)
     added_books_count = models.IntegerField(default = 0)
+    followers = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'followers', null = True, blank = True)
     
 
 class Book(models.Model):
