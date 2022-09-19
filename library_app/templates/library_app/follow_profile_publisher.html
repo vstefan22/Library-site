@@ -12,6 +12,7 @@
 <body>
 
     {%block content%}
+
     {% for info in person%}
     <!--If user adds profile display his data-->
     <section class="h-100 gradient-custom-2">
@@ -39,7 +40,8 @@
                             <p>Email address: {{info.profile.email}}</p>
                             {%else%}
                             {%endif%}
-                            <p>Number of followers: {{number_of_followers}}</p>
+                            <p>Followers: {{followers}}</p>
+                            <p>Following: {{following}}</p>
                         </div>
                         <div class="ms-3">
                             <p>Medals: {{junior}}{{reader}}{{experienced_reader}}{{genius}}{{starter}}{{junior_reader}}

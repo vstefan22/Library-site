@@ -24,7 +24,7 @@ from .permissions import DetailPermission, PostPermission
 from .serializers import BookSerializer
 from rest_framework import status
 
-from .models import Book, Person, AddReadBook, SavedBook, Comment
+from .models import Book, Person, AddReadBook, SavedBook, Comment, FriendShip
 from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm, EditProfileForm, EditBookForm, CommentForm
 
 
@@ -367,31 +367,41 @@ class Publisher(DetailView):
         print()
         for i in profile_publisher:
             print(i.profile)
-        following_count = Person.objects.filter(profile_id = self.kwargs['pk']).values_list('followers', flat = True).count()
-
+        followers = FriendShip.objects.filter(followed_by = self.request.user.person).count()
+        following = FriendShip.objects.filter(sent_by = self.request.user.person).count()
+        context['followers'] = followers
+        context['following'] = following
         context['user_publisher'] = profile_publisher
         context['check_user'] = self.request.user == user_publisher
-        context['number_of_followers'] = following_count
+
 
 
         return context
 
 class Follow(CreateView):
-    model = Person
+    model = FriendShip
     template_name = 'library_app/follow_profile_publisher.html'
-    slug_field = 'profile'
-    fields = ['followers']
+    slug_field = 'id'
+    fields = ['followed_by', 'sent_by']
 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        followed_profile = User.objects.get(id = self.kwargs['pk'])
-        Person.objects.create(followers = followed_profile)
-        following_count = Person.objects.filter(profile_id = self.kwargs['pk']).values_list('followers', flat = True).count()
-        person = Person.objects.filter(profile_id = self.kwargs['pk'])
-        context['profile'] = followed_profile
+        followed_by = self.request.user
+        print(self.request.user.person)
+        sent_to = Person.objects.get(profile_id = self.kwargs['pk'])
+        friendship = FriendShip(
+            followed_by = followed_by.person,
+            sent_by = sent_to
+        )
+        friendship.save()
+        person = Person.objects.filter(profile = self.kwargs['pk'])
+        followers = FriendShip.objects.filter(followed_by = self.request.user.person).count()
+        following = FriendShip.objects.filter(sent_by = self.request.user.person).count()
+        context['followers'] = followers
+        context['following'] = following
         context['person'] = person
-        context['number_of_followers'] = following_count
+        context['friendship'] = friendship
         
         return context
 
@@ -435,7 +445,8 @@ class Profile(LoginRequiredMixin, ListView):
                 context['genius'] = 4
         account = Person.objects.filter(profile = self.request.user)
         read_books = AddReadBook.objects.filter(user = self.request.user)[:3]
-        following_count = Person.objects.filter(profile = self.request.user).values_list('followers', flat = True).count()
+        followers = FriendShip.objects.filter(followed_by = self.request.user.person).count()
+        following = FriendShip.objects.filter(sent_by = self.request.user.person).count()
 
         
         profile = User.objects.all()
@@ -444,7 +455,10 @@ class Profile(LoginRequiredMixin, ListView):
             context['person'] = account
             context['read_books'] = read_books
             context['read_books_count'] = read_books_count
-            context['number_of_followers'] = following_count
+        
+            context['followers'] = followers
+            context['following'] = following
+
 
 
 
