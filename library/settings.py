@@ -72,6 +72,8 @@ TEMPLATES = [
     },
 ]
 
+
+
 WSGI_APPLICATION = 'library.wsgi.application'
 
 

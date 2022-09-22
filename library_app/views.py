@@ -1,3 +1,4 @@
+from tkinter.messagebox import RETRY
 from django.views.generic import ListView, CreateView, DetailView, FormView, UpdateView, RedirectView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -63,15 +64,19 @@ class NewFollowers(ListView):
         context['new_followers'] = new_followers
         return context
 
-class AddToFavorie(CreateView):
+class AddToFavourite(CreateView):
     model = FavouriteBooks
-    template_name = 'add_to_favorite_books.html'
-    fields = 'book'
+    fields = ['book']
+    template_name = 'library_app/add_to_favourite.html'
 
-    def form_valid(self, form):
-        book_title = self.kwargs['slug']
-        print(book_title)
-        return super().form_valid(form)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        slug = self.kwargs['title']
+        book = Book.objects.get(title = slug)
+        fav_books = FavouriteBooks.objects.create(book = book, person = self.request.user.person)
+
+        context['favourite_books'] = fav_books
+        return context
 # Single page for book
 class BookDetail(DetailView, CreateView, RedirectView):
     model = Book
