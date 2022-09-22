@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+{%extends 'library_app/base.html'%}
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Library | Home</title>
+</head>
+
+<body>
+    {%block content%}
+    <h1>New Followers</h1>
+    {%for follower in new_followers%}
+    <div style="margin: 10px;">
+
+        <a href="{% url 'publisher' follower.followed_by.profile.id %}" class="text-decoration-none"
+            style="color: black;">{{follower.followed_by.profile}}
+            |{{follower.followed_by.profile.first_name}}&nbsp;{{follower.followed_by.profile.last_name}}</a>
+        <br>
+    </div>
+    {%endfor%}
+    {%endblock%}
+
+
+</body>

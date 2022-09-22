@@ -11,7 +11,7 @@
 
 <body>
     {%block content%}
-
+    {{new_followers}}
     <!--Side menu-->
     <div class="container-fluid" style="margin-top: 5px;">
         <div class="row flex-nowrap">
@@ -79,10 +79,11 @@
                                 <p><a href=" {% url 'add_read_book' i.title %}">I have read this book
                                     </a></p>
 
-
+                                <p><a href=" {% url 'add_to_favorite' i.title %}">Add to favorite
+                                    </a></p>
                                 <form method="post">
                                     {%csrf_token%}
-                                    <button type="submit" value="{{i.title">
+                                    <button type="submit" value="{{i.title}}">
                                         <a href=" {% url 'save' i.title %}">Save book</a>
                                     </button>
                                 </form>

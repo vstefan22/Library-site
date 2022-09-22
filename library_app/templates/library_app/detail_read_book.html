@@ -12,7 +12,7 @@
 <body>
 
     {%block content%}
-    {%if book%}
+
     {%for i in book%}
     <div style="margin: 20px; font-size: 18px;" class="row">
         <h1 class="card-title " style="text-align: center;">{{i.title}}</h1>
@@ -26,8 +26,6 @@
         </div>
     </div>
     {%endfor%}
-
-    {%endif%}
     {%endblock%}
 </body>
 

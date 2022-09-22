@@ -1,7 +1,3 @@
-
-from gc import get_objects
-import profile
-from turtle import update
 from django.views.generic import ListView, CreateView, DetailView, FormView, UpdateView, RedirectView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -10,6 +6,7 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth import login
 from django.contrib import messages
 from django.urls import reverse_lazy, reverse
+import datetime
 
 from django.shortcuts import HttpResponseRedirect
 
@@ -24,7 +21,7 @@ from .permissions import DetailPermission, PostPermission
 from .serializers import BookSerializer
 from rest_framework import status
 
-from .models import Book, Person, AddReadBook, SavedBook, Comment, FriendShip
+from .models import Book, Person, AddReadBook, SavedBook, Comment, FriendShip, FavouriteBooks
 from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm, EditProfileForm, EditBookForm, CommentForm
 
 
@@ -36,8 +33,10 @@ class ListOfBooks(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
+           
             book_q = Book.objects.filter().values_list('id', flat = True)
             saved_book = SavedBook.objects.filter(book__id__in = book_q, person = self.request.user).values_list('book__id')
+
             
             read_books = AddReadBook.objects.filter(user = self.request.user).values_list('title', flat=True)
             book_category = Book.objects.all().distinct('category')
@@ -52,7 +51,27 @@ class ListOfBooks(ListView):
              
         return context
 
+class NewFollowers(ListView):
+    model = FriendShip
+    template_name = 'friendship_list.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current_date = datetime.date.today()
+        print(current_date)
+        new_followers = FriendShip.objects.filter(sent_by = self.request.user.person, date = current_date).distinct('followed_by')
+        context['new_followers'] = new_followers
+        return context
 
+class AddToFavorie(CreateView):
+    model = FavouriteBooks
+    template_name = 'add_to_favorite_books.html'
+    fields = 'book'
+
+    def form_valid(self, form):
+        book_title = self.kwargs['slug']
+        print(book_title)
+        return super().form_valid(form)
 # Single page for book
 class BookDetail(DetailView, CreateView, RedirectView):
     model = Book
@@ -291,7 +310,8 @@ class ReadBookDetail(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['book'] = AddReadBook.objects.filter(user = self.request.user, title = self.kwargs['slug'])
+        book = AddReadBook.objects.filter(user = self.request.user, title = self.kwargs['slug'])
+        context['book'] = book
         return context
 
 
@@ -445,8 +465,8 @@ class Profile(LoginRequiredMixin, ListView):
                 context['genius'] = 4
         account = Person.objects.filter(profile = self.request.user)
         read_books = AddReadBook.objects.filter(user = self.request.user)[:3]
-        followers = FriendShip.objects.filter(followed_by = self.request.user.person).count()
-        following = FriendShip.objects.filter(sent_by = self.request.user.person).count()
+        following = FriendShip.objects.filter(followed_by = self.request.user.person).count()
+        followers = FriendShip.objects.filter(sent_by = self.request.user.person).count()
 
         
         profile = User.objects.all()

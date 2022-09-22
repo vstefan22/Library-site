@@ -20,6 +20,8 @@ urlpatterns = [
     path('remove_read_book/<slug:slug>/', views.RemoveReadBook.as_view(), name = 'remove_read_book'),
     path('profile/<int:pk>/', views.Publisher.as_view(), name  = 'publisher'),
     path('follow/<int:pk>/', views.Follow.as_view(), name = 'follow'),
+    path('new_followers', views.NewFollowers.as_view(), name = 'new_followers'),
+    path('add_to_favorite/<slug:slug>/', views.AddToFavorite.as_view(), name = 'add_to_favorite'),
 
     # User account urls
     path('profile/', views.Profile.as_view(), name = 'profile'),
