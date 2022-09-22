@@ -1,0 +1,50 @@
+{%extends 'library_app/base.html'%}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library | Saved books</title>
+</head>
+
+<body>
+
+    {%block content%}
+    <h1 style="text-align: center;">Favourite books</h1>
+    <div class="row">
+        {% for book in favourite_books %}
+
+        <div class="col-sm-2" style="margin: 20px;">
+            <a href="{% url 'book' book.book.title %}" class="text-decoration-none" style="color: black;">
+                <div class="card text-reset" style="width: 18rem;">
+
+                    <h5 class="card-title" style="margin: 5px;">{{book.book.title}}</h5>
+                    <img class="card-img-top" src="{{book.book.image.url}}" alt="Card image cap">
+                    <div class="card-body">
+                        <p class="card-text">Description:
+                            <br>&nbsp;&nbsp;&nbsp;&nbsp;{{book.book.description|slice:255}}...
+                        </p>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Author: {{book.book.author}}</li>
+                        </ul>
+                        <p>Genre:{{book.book.category}}</p>
+                        <p>Language: {{book.book.language}}</p>
+                    </div>
+                    <div class="card-body">
+
+                    </div>
+                </div>
+            </a>
+
+        </div>
+
+        {%endfor%}
+    </div>
+
+    {%endblock%}
+</body>
+
+</html>

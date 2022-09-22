@@ -22,7 +22,9 @@ from .permissions import DetailPermission, PostPermission
 from .serializers import BookSerializer
 from rest_framework import status
 
-from .models import Book, Person, AddReadBook, SavedBook, Comment, FriendShip, FavouriteBooks
+from library_app import models
+from .models import FavouriteBooks
+from .models import Book, Person, AddReadBook, SavedBook, Comment, FriendShip
 from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm, EditProfileForm, EditBookForm, CommentForm
 
 
@@ -41,8 +43,8 @@ class ListOfBooks(ListView):
             
             read_books = AddReadBook.objects.filter(user = self.request.user).values_list('title', flat=True)
             book_category = Book.objects.all().distinct('category')
-            
-            exc = Book.objects.exclude(title__in = read_books).exclude(id__in = saved_book)
+            favourite_books = models.FavouriteBooks.objects.filter(person = self.request.user.person).values_list('book__title', flat = True)
+            exc = Book.objects.exclude(title__in = read_books).exclude(id__in = saved_book).exclude(title__in = favourite_books)
 
             context['book'] = exc
             context['book_category'] = book_category
@@ -76,6 +78,17 @@ class AddToFavourite(CreateView):
         fav_books = FavouriteBooks.objects.create(book = book, person = self.request.user.person)
 
         context['favourite_books'] = fav_books
+        return context
+
+
+class FavouriteBooks(ListView):
+    model = FavouriteBooks
+    template_name = 'library_app/favourite_books.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        favourite_books = self.model.objects.all().distinct('book')
+        context['favourite_books'] = favourite_books
         return context
 # Single page for book
 class BookDetail(DetailView, CreateView, RedirectView):
@@ -144,7 +157,7 @@ class GenreList(ListView):
     
     def get_queryset(self):
         self.ctg = self.kwargs['ctg']
-        self.q = Book.objects.filter(category__icontains=self.kwargs['ctg'])
+        self.q = Book.objects.filter(category = self.kwargs['ctg'])
         if self.q:
             object_list = self.q
         else:

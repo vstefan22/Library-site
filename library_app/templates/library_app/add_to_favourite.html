@@ -13,32 +13,21 @@
 <body>
 
     {%block content%}
-
-    <form class="d-flex" method="get" action="{% url 'saved'%}" style="margin: 20px;">
-        {%csrf_token%}
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
-        <button class="btn btn-outline-success" type="submit">Search for favourite books</button>
-    </form>
-
-
     <div class="row">
-
-
-
         <div class="col-sm-2" style="margin: 20px;">
 
 
             <div class="card text-reset" style="width: 18rem;">
 
-                <h5 class="card-title">{{favourite_books.book.title}}</h5>
+                <h5 class="card-title" style="margin: 5px;">{{favourite_books.book.title}}</h5>
                 <div class="card-body">
-                    <p class="card-text">{{favourite_books.book.description|slice:255}}...</p>
+                    <p class="card-text">Description:
+                        <br>&nbsp;&nbsp;&nbsp;&nbsp;{{favourite_books.book.description|slice:255}}...
+                    </p>
 
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item">{{favourite_books.book.author}}</li>
+                        <li class="list-group-item">Author: {{favourite_books.book.author}}</li>
                     </ul>
-
-
                     <p>Genre:{{favourite_books.book.category}}</p>
                     <p>Language: {{favourite_books.book.language}}</p>
 

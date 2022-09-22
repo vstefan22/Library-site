@@ -26,6 +26,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{%url 'addBook'%}">Add book</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'favourite_books'%}" tabindex="-1">Favourite books</a>
+                    </li>
                 </ul>
 
                 <!--Search-->
@@ -41,6 +44,7 @@
 
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'profile'%}" tabindex="-1">Profile</a>
+                </li>
 
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'new_followers' %}">New followers</a>

@@ -15,38 +15,38 @@
     <div class="row">
         {% include 'library_app/messages.html' %}
         <h1 style="text-align: center;">Results for {{genre}} genre:</h1>
-        {% for i in result%}
 
-        <div class="col-sm-4" style="margin-top: 10px; margin-left: 10px;">
+        <div class="row">
+            {% for book in result%}
 
-            <a href="{% url 'book' i.title%}" class="text-decoration-none" style="color: black;">
-                <div class="card text-reset" style="width: 18rem;">
+            <div class="col-sm-2" style="margin: 20px;">
+                <a href="{% url 'book' book.title %}" class="text-decoration-none" style="color: black;">
+                    <div class="card text-reset" style="width: 18rem;">
 
-                    <h5 class="card-title ">{{i.title}}</h5>
+                        <h5 class="card-title" style="margin: 5px;">{{book.title}}</h5>
+                        <img class="card-img-top" src="{{book.book.image.url}}" alt="Card image cap">
+                        <div class="card-body">
+                            <p class="card-text">Description:
+                                <br>&nbsp;&nbsp;&nbsp;&nbsp;{{book.description|slice:255}}...
+                            </p>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Author: {{book.author}}</li>
+                            </ul>
+                            <p>Genre:{{book.category}}</p>
+                            <p>Language: {{book.language}}</p>
+                        </div>
+                        <div class="card-body">
 
-                    <img class="card-img-top" src="{{i.image.url}}" alt="Card image cap">
-
-                    <div class="card-body">
-                        <p class="card-text">{{i.description|slice:255}}...</p>
+                        </div>
                     </div>
+                </a>
 
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">{{i.author}}</li>
-                    </ul>
+            </div>
 
-                    <div class="card-body">
-                        <p>Genre:{{i.category}}</p>
-                        <p>Read:&nbsp;{{i.read}}</p>
-                        <p>Language: {{i.language}}</p>
-                    </div>
-                </div>
-            </a>
+            {%endfor%}
         </div>
-        {%endfor%}
-    </div>
-    </div>
-    </div>
-    {%endblock%}
+
+        {%endblock%}
 </body>
 
 </html>
