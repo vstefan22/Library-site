@@ -30,7 +30,8 @@
                                 <img src="{{info.profile_pic.url}}" alt="Generic placeholder image"
                                     class="img-fluid img-thumbnail mt-4 mb-2" style="width: 150px; z-index: 1">
                             </div>
-                            {%if request.user != info.profile %}
+                            {%if check_user or show%}
+                            {%else%}
                             <button type="button" class="btn btn-outline-dark" data-mdb-ripple-color="dark"
                                 style="z-index: 1;">
                                 <a href="{% url 'follow' info.profile.id%}">
@@ -38,6 +39,7 @@
                                 </a>
                             </button>
                             {%endif%}
+
                             <div class="ms-3" style="margin-top: 110px;">
                                 <h5>{{info.profile.first_name}} {{info.profile.last_name}} </h5>
                                 <h5>Username: {{info.profile.username}}</h5>

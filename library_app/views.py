@@ -1,3 +1,5 @@
+import profile
+from tabnanny import check
 from tkinter.messagebox import RETRY
 from django.views.generic import ListView, CreateView, DetailView, FormView, UpdateView, RedirectView
 from django.views.generic.edit import DeleteView
@@ -61,8 +63,8 @@ class NewFollowers(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         current_date = datetime.date.today()
-        print(current_date)
-        new_followers = FriendShip.objects.filter(sent_by = self.request.user.person, date = current_date).distinct('followed_by')
+        
+        new_followers = FriendShip.objects.filter(sent_to = self.request.user.person, date = current_date).distinct('followed_by')
         context['new_followers'] = new_followers
         return context
 
@@ -401,16 +403,28 @@ class Publisher(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         profile_publisher = Person.objects.filter(profile = self.kwargs['pk'])
-        user_publisher = User.objects.filter(id = self.kwargs['pk'])
-        print()
-        for i in profile_publisher:
-            print(i.profile)
-        followers = FriendShip.objects.filter(followed_by = self.request.user.person).count()
-        following = FriendShip.objects.filter(sent_by = self.request.user.person).count()
-        context['followers'] = followers
-        context['following'] = following
+        profile_publisher_get = Person.objects.get(profile = self.kwargs['pk'])
+        check_user = Person.objects.get(profile = self.kwargs['pk'])
+
+        profile_publisher_followers = FriendShip.objects.filter(sent_to = profile_publisher_get).count()
+        profile_publisher_following = FriendShip.objects.filter(followed_by = profile_publisher_get).count()
+
+        #user_publisher = User.objects.filter(id = self.kwargs['pk'])
+        profile_publisher_followers_followed_by = FriendShip.objects.filter(sent_to = profile_publisher_get)
+        for follower in profile_publisher_followers_followed_by:
+            follower_query = follower.followed_by
+
+        if self.request.user == follower_query.profile:
+            context['show'] = True
+        else:
+            context['show'] = False
+        if self.request.user == check_user:
+            context['check_user'] = True 
+        else:
+            context['check_user'] = False
+        context['followers'] = profile_publisher_followers
+        context['following'] = profile_publisher_following
         context['user_publisher'] = profile_publisher
-        context['check_user'] = self.request.user == user_publisher
 
 
 
@@ -420,22 +434,21 @@ class Follow(CreateView):
     model = FriendShip
     template_name = 'library_app/follow_profile_publisher.html'
     slug_field = 'id'
-    fields = ['followed_by', 'sent_by']
+    fields = ['followed_by', 'sent_to']
 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         followed_by = self.request.user
-        print(self.request.user.person)
         sent_to = Person.objects.get(profile_id = self.kwargs['pk'])
         friendship = FriendShip(
             followed_by = followed_by.person,
-            sent_by = sent_to
+            sent_to = sent_to
         )
         friendship.save()
         person = Person.objects.filter(profile = self.kwargs['pk'])
         followers = FriendShip.objects.filter(followed_by = self.request.user.person).count()
-        following = FriendShip.objects.filter(sent_by = self.request.user.person).count()
+        following = FriendShip.objects.filter(sent_to = self.request.user.person).count()
         context['followers'] = followers
         context['following'] = following
         context['person'] = person
@@ -483,8 +496,8 @@ class Profile(LoginRequiredMixin, ListView):
                 context['genius'] = 4
         account = Person.objects.filter(profile = self.request.user)
         read_books = AddReadBook.objects.filter(user = self.request.user)[:3]
-        following = FriendShip.objects.filter(followed_by = self.request.user.person).count()
-        followers = FriendShip.objects.filter(sent_by = self.request.user.person).count()
+        followers = FriendShip.objects.filter(followed_by = self.request.user.person).count()
+        following = FriendShip.objects.filter(sent_to = self.request.user.person).count()
 
         
         profile = User.objects.all()

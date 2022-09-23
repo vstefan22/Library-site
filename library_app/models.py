@@ -24,8 +24,8 @@ class Person(models.Model):
 
 
 class FriendShip(models.Model):
-    followed_by = models.ForeignKey(Person, on_delete = models.CASCADE, related_name = 'followers', null = True, blank = True)
-    sent_by = models.ForeignKey(Person, on_delete = models.CASCADE, related_name = 'following', null = True, blank = True)
+    followed_by = models.ForeignKey(Person, on_delete = models.CASCADE, related_name = 'following', null = True, blank = True)
+    sent_to = models.ForeignKey(Person, on_delete = models.CASCADE, related_name = 'followers', null = True, blank = True)
     date = models.DateField(auto_now_add=True, null = True, blank = True)
     
 
