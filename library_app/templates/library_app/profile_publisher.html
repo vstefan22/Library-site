@@ -55,8 +55,12 @@
                             {%else%}
 
                             {%endif%}
-                            <p>Followers: {{followers}}</p>
-                            <p>Following: {{following}}</p>
+                            <a href="{% url 'show_publisher_followers' info.profile.id%}">
+                                <p>Followers: {{followers}}</p>
+                            </a>
+                            <a href="{% url 'show_publisher_following' info.profile.id%}">
+                                <p>Following: {{following}}</p>
+                            </a>
                         </div>
                         <div class="ms-3">
                             <p>Medals: {{junior}}{{reader}}{{experienced_reader}}{{genius}}{{starter}}{{junior_reader}}

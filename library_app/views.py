@@ -1,6 +1,3 @@
-import profile
-from tabnanny import check
-from tkinter.messagebox import RETRY
 from django.views.generic import ListView, CreateView, DetailView, FormView, UpdateView, RedirectView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -55,6 +52,7 @@ class ListOfBooks(ListView):
              context['book'] = Book.objects.all()
              
         return context
+
 
 class NewFollowers(ListView):
     model = FriendShip
@@ -377,9 +375,6 @@ class Saved(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
         context['object_list'] = self.object_list
-        
-
-        
         return context
 
 
@@ -409,46 +404,52 @@ class Publisher(DetailView):
         profile_publisher_followers = FriendShip.objects.filter(sent_to = profile_publisher_get).count()
         profile_publisher_following = FriendShip.objects.filter(followed_by = profile_publisher_get).count()
 
-        #user_publisher = User.objects.filter(id = self.kwargs['pk'])
-        profile_publisher_followers_followed_by = FriendShip.objects.filter(sent_to = profile_publisher_get)
+
+        profile_publisher_followers_followed_by = FriendShip.objects.filter(sent_to = profile_publisher_get).exclude(followed_by = None)
+        
         for follower in profile_publisher_followers_followed_by:
             follower_query = follower.followed_by
-
+            print(follower_query)
+                
         if self.request.user == follower_query.profile:
             context['show'] = True
         else:
             context['show'] = False
-        if self.request.user == check_user:
+        if self.request.user.person == check_user:
             context['check_user'] = True 
         else:
             context['check_user'] = False
         context['followers'] = profile_publisher_followers
         context['following'] = profile_publisher_following
         context['user_publisher'] = profile_publisher
-
-
-
         return context
+
 
 class Follow(CreateView):
     model = FriendShip
     template_name = 'library_app/follow_profile_publisher.html'
     slug_field = 'id'
-    fields = ['followed_by', 'sent_to']
-
+    fields = ['followed_by', 'sent_to', 'follow']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         followed_by = self.request.user
+
         sent_to = Person.objects.get(profile_id = self.kwargs['pk'])
+        
+
         friendship = FriendShip(
+            
             followed_by = followed_by.person,
+            
             sent_to = sent_to
         )
+        following = FriendShip.objects.create(sent_to = self.request.user.person, follow = sent_to)
         friendship.save()
+        following.save()
         person = Person.objects.filter(profile = self.kwargs['pk'])
-        followers = FriendShip.objects.filter(followed_by = self.request.user.person).count()
-        following = FriendShip.objects.filter(sent_to = self.request.user.person).count()
+        followers = FriendShip.objects.filter(followed_by = self.kwargs['pk']).count()
+        following = FriendShip.objects.filter(sent_to = self.kwargs['pk']).count()
         context['followers'] = followers
         context['following'] = following
         context['person'] = person
@@ -456,6 +457,27 @@ class Follow(CreateView):
         
         return context
 
+
+class ShowPublisherFollowers(ListView):
+    model = FriendShip
+    template_name = 'library_app/profile_publisher_followers.html'
+    #slug_field = 'following'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profile_publisher_followers = FriendShip.objects.filter(sent_to = self.kwargs['pk']).distinct('followed_by')
+        context['profile_publisher_followers'] = profile_publisher_followers
+        return context
+
+
+class ShowPublisherFollowing(ListView):
+    model = FriendShip
+    template_name = 'library_app/profile_publisher_following.html'
+    slug_field = 'followers'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profile_publisher_following = FriendShip.objects.filter(sent_to = self.kwargs['pk'])
+        context['profile_publisher_following'] = profile_publisher_following
+        return context
 
 
 # User functionalities 
@@ -498,7 +520,7 @@ class Profile(LoginRequiredMixin, ListView):
         read_books = AddReadBook.objects.filter(user = self.request.user)[:3]
         followers = FriendShip.objects.filter(followed_by = self.request.user.person).count()
         following = FriendShip.objects.filter(sent_to = self.request.user.person).count()
-
+        
         
         profile = User.objects.all()
 

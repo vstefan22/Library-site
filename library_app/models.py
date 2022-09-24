@@ -10,8 +10,6 @@ class AddReadBook(models.Model):
     finished_reading = models.DateField(null = True, blank = True)
 
 
-
-
 class Person(models.Model):
     profile = models.OneToOneField(User, on_delete = models.CASCADE, null = True, blank = True)
     profile_pic = models.ImageField(default='download.jpg', upload_to = 'images/', null = True, blank = True)
@@ -20,12 +18,10 @@ class Person(models.Model):
     added_books_count = models.IntegerField(default = 0)
 
 
-
-
-
 class FriendShip(models.Model):
     followed_by = models.ForeignKey(Person, on_delete = models.CASCADE, related_name = 'following', null = True, blank = True)
     sent_to = models.ForeignKey(Person, on_delete = models.CASCADE, related_name = 'followers', null = True, blank = True)
+    follow = models.ForeignKey(Person, on_delete = models.CASCADE, related_name = 'follow', null = True, blank = True)
     date = models.DateField(auto_now_add=True, null = True, blank = True)
     
 
@@ -48,6 +44,7 @@ class FavouriteBooks(models.Model):
     person = models.ForeignKey(Person, on_delete = models.CASCADE)
     book = models.ForeignKey(Book, on_delete = models.DO_NOTHING)
 
+
 class Comment(models.Model):
     user = models.ForeignKey(Person, on_delete = models.CASCADE)
     book = models.ForeignKey(Book, on_delete = models.CASCADE)
@@ -55,14 +52,6 @@ class Comment(models.Model):
     date = models.DateField(auto_now_add = True)
 
 
-
 class SavedBook(models.Model):
     person = models.ForeignKey(User, on_delete = models.CASCADE, null = True)
     book = models.ForeignKey(Book, on_delete = models.CASCADE, default = "", null = True)
-   
-
-
-
-        
-
-

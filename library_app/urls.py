@@ -23,6 +23,9 @@ urlpatterns = [
     path('new_followers', views.NewFollowers.as_view(), name = 'new_followers'),
     path('add_to_favorite/<slug:title>/', views.AddToFavourite.as_view(), name = 'add_to_favorite'),
     path('favourite_books/', views.FavouriteBooks.as_view(), name = 'favourite_books'),
+    path('<int:pk>/followers', views.ShowPublisherFollowers.as_view(), name = 'show_publisher_followers'),
+    path('<int:pk>/following', views.ShowPublisherFollowing.as_view(), name = 'show_publisher_following'),
+
 
     # User account urls
     path('profile/', views.Profile.as_view(), name = 'profile'),
