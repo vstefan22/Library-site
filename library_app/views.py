@@ -22,7 +22,6 @@ from .serializers import BookSerializer
 from rest_framework import status
 
 from library_app import models
-from .models import FavouriteBooks
 from .models import Book, Person, AddReadBook, SavedBook, Comment, FriendShip
 from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm, EditProfileForm, EditBookForm, CommentForm
 
@@ -31,19 +30,21 @@ from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm, EditP
 class ListOfBooks(ListView):
     model = Book
     template_name = 'library_app/index.html'
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
-           
             book_q = Book.objects.filter().values_list('id', flat = True)
             saved_book = SavedBook.objects.filter(book__id__in = book_q, person = self.request.user).values_list('book__id')
 
             
             read_books = AddReadBook.objects.filter(user = self.request.user).values_list('title', flat=True)
             book_category = Book.objects.all().distinct('category')
-            favourite_books = models.FavouriteBooks.objects.filter(person = self.request.user.person).values_list('book__title', flat = True)
-            exc = Book.objects.exclude(title__in = read_books).exclude(id__in = saved_book).exclude(title__in = favourite_books)
+            try:
+                favourite_books = models.FavouriteBooks.objects.filter(person = self.request.user.person).values_list('book__title', flat = True)
+                exc = Book.objects.exclude(title__in = read_books).exclude(id__in = saved_book).exclude(title__in = favourite_books)
+            except Person.DoesNotExist:
+                exc = Book.objects.exclude(title__in = read_books).exclude(id__in = saved_book)
 
             context['book'] = exc
             context['book_category'] = book_category
@@ -67,7 +68,7 @@ class NewFollowers(ListView):
         return context
 
 class AddToFavourite(CreateView):
-    model = FavouriteBooks
+    model = models.FavouriteBooks
     fields = ['book']
     template_name = 'library_app/add_to_favourite.html'
 
@@ -82,7 +83,7 @@ class AddToFavourite(CreateView):
 
 
 class FavouriteBooks(ListView):
-    model = FavouriteBooks
+    model = models.FavouriteBooks
     template_name = 'library_app/favourite_books.html'
 
     def get_context_data(self, **kwargs):
@@ -409,16 +410,20 @@ class Publisher(DetailView):
         
         for follower in profile_publisher_followers_followed_by:
             follower_query = follower.followed_by
-            print(follower_query)
                 
         if self.request.user == follower_query.profile:
             context['show'] = True
         else:
             context['show'] = False
-        if self.request.user.person == check_user:
-            context['check_user'] = True 
+        if self.request.user.person:
+            context['has_perm'] = True
         else:
-            context['check_user'] = False
+            context['has_perm'] = False
+        if self.request.user.person:
+            if self.request.user.person == check_user:
+                context['check_user'] = True 
+            else:
+                context['check_user'] = False
         context['followers'] = profile_publisher_followers
         context['following'] = profile_publisher_following
         context['user_publisher'] = profile_publisher
@@ -436,8 +441,6 @@ class Follow(CreateView):
         followed_by = self.request.user
 
         sent_to = Person.objects.get(profile_id = self.kwargs['pk'])
-        
-
         friendship = FriendShip(
             
             followed_by = followed_by.person,
@@ -486,12 +489,12 @@ class ShowPublisherFollowing(ListView):
 class Profile(LoginRequiredMixin, ListView):
     model = Person
     template_name = 'library_app/profile.html'
-    
+        
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         added_books_count = Person.objects.filter(profile = self.request.user).values_list('added_books_count', flat=True)
         read_books_count = AddReadBook.objects.filter(user = self.request.user).count()
-        print(read_books_count)
+            
         if read_books_count == 1 or read_books_count < 5:
             context['starter'] = 1
         if read_books_count > 5:
@@ -507,7 +510,7 @@ class Profile(LoginRequiredMixin, ListView):
         if read_books_count > 100:
             context['genius'] = 100
         for i in added_books_count:
-            
+                
             if i == 1 or i<5:
                 context['junior'] = 1
             if i > 5:
@@ -518,29 +521,29 @@ class Profile(LoginRequiredMixin, ListView):
                 context['genius'] = 4
         account = Person.objects.filter(profile = self.request.user)
         read_books = AddReadBook.objects.filter(user = self.request.user)[:3]
-        followers = FriendShip.objects.filter(followed_by = self.request.user.person).count()
-        following = FriendShip.objects.filter(sent_to = self.request.user.person).count()
-        
-        
+        # error
+        try:
+            followers = FriendShip.objects.filter(followed_by = self.request.user.person).count()
+            following = FriendShip.objects.filter(sent_to = self.request.user.person).count()
+        except Person.DoesNotExist:
+            followers = None
+            following = None
+            
+            
         profile = User.objects.all()
 
         if account:
             context['person'] = account
             context['read_books'] = read_books
             context['read_books_count'] = read_books_count
-        
             context['followers'] = followers
             context['following'] = following
-
-
-
-
         else:
             context['profile'] = profile
-            
+                
         return context
 
-
+         
 class AddedBooks(ListView):
     model = Book
     template_name = 'library_app/added_books.html'
@@ -574,7 +577,7 @@ class RegisterPage(FormView):
 
 
 class CreateProfile(LoginRequiredMixin, CreateView):
-    model = Profile
+    model = Person
     form_class = PersonInfo
     template_name = 'library_app/create_profile.html'
     success_url = '/profile/'

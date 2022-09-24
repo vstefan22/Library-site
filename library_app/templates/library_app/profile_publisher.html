@@ -30,6 +30,7 @@
                                 <img src="{{info.profile_pic.url}}" alt="Generic placeholder image"
                                     class="img-fluid img-thumbnail mt-4 mb-2" style="width: 150px; z-index: 1">
                             </div>
+                            {%if has_perm%}
                             {%if check_user or show%}
                             {%else%}
                             <button type="button" class="btn btn-outline-dark" data-mdb-ripple-color="dark"
@@ -38,6 +39,8 @@
                                     Follow
                                 </a>
                             </button>
+                            {%else%}
+
                             {%endif%}
 
                             <div class="ms-3" style="margin-top: 110px;">
