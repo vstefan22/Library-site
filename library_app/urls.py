@@ -26,7 +26,6 @@ urlpatterns = [
     path('<int:pk>/followers', views.ShowPublisherFollowers.as_view(), name = 'show_publisher_followers'),
     path('<int:pk>/following', views.ShowPublisherFollowing.as_view(), name = 'show_publisher_following'),
 
-
     # User account urls
     path('profile/', views.Profile.as_view(), name = 'profile'),
     path('logout/', LogoutView.as_view(next_page = 'login'), name = 'logout'),

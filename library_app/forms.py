@@ -9,12 +9,14 @@ from . import models
 class AddBook(ModelForm):
     class Meta:
         model = models.Book
-        fields = ['image', 'title', 'description', 'language', 'category', 'published_date']
+        fields = ['image', 'title', 'description', 'author', 'language', 'category', 'published_date']
         widgets = {
             'image':forms.FileInput(),
             'title':forms.TextInput(attrs={'placeholder': 'Title'}),
             'description': forms.Textarea(attrs={'cols': 80, 'rows': 20}),
             'language':forms.TextInput(attrs={'placeholder': 'Language'}),
+            'author':forms.TextInput(attrs={'placeholder': 'Enter author name'}),
+
             'category':forms.TextInput(attrs={'placeholder': 'Genre'}),
             'published_date':forms.DateInput(attrs={'placeholder': 'e.g. 1583-01-01'}),
 

@@ -1,3 +1,4 @@
+from urllib import request
 from django.views.generic import ListView, CreateView, DetailView, FormView, UpdateView, RedirectView
 from django.views.generic.edit import DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -8,7 +9,7 @@ from django.contrib import messages
 from django.urls import reverse_lazy, reverse
 import datetime
 
-from django.shortcuts import HttpResponseRedirect
+from django.shortcuts import HttpResponseRedirect, HttpResponse
 
 
 from .serializers import AuthorSerializer
@@ -22,7 +23,7 @@ from .serializers import BookSerializer
 from rest_framework import status
 
 from library_app import models
-from .models import Book, Person, AddReadBook, SavedBook, Comment, FriendShip
+from .models import Book, Person, AddReadBook, SavedBook, Comment, FriendShip, FavouriteBooks
 from .forms import AddBook, PersonInfo, UserRegisterForm, AddReadBookForm, EditProfileForm, EditBookForm, CommentForm
 
 
@@ -62,8 +63,11 @@ class NewFollowers(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         current_date = datetime.date.today()
-        
-        new_followers = FriendShip.objects.filter(sent_to = self.request.user.person, date = current_date).distinct('followed_by')
+        new_followers = None
+        try:
+            new_followers = FriendShip.objects.filter(sent_to = self.request.user.person, date = current_date).distinct('followed_by')
+        except:
+            HttpResponse("You need to make profile to have access to visit this page.")
         context['new_followers'] = new_followers
         return context
 
@@ -76,7 +80,11 @@ class AddToFavourite(CreateView):
         context = super().get_context_data(**kwargs)
         slug = self.kwargs['title']
         book = Book.objects.get(title = slug)
-        fav_books = FavouriteBooks.objects.create(book = book, person = self.request.user.person)
+        fav_books = None
+        try:
+            fav_books = self.model.objects.create(book = book, person = self.request.user.person)
+        except Person.DoesNotExist:
+            HttpResponse("You need to make an account to add books to favourite.")
 
         context['favourite_books'] = fav_books
         return context
@@ -105,7 +113,11 @@ class BookDetail(DetailView, CreateView, RedirectView):
             book = Book.objects.filter(title = self.kwargs['slug'])
             for i in book:
                 title = i
-            my_p = Person.objects.get(profile = self.request.user)
+            try:
+                my_p = Person.objects.get(profile = self.request.user)
+            except Person.DoesNotExist:
+                return HttpResponse("Create profile, to post a comment")
+
             form.instance.user = my_p
             form.instance.book = title
             return super().form_valid(form)
@@ -116,9 +128,11 @@ class BookDetail(DetailView, CreateView, RedirectView):
         book = Book.objects.filter(title = self.kwargs['slug'])
 
 
-        if self.request.user.is_authenticated:
+        try:
             user = Person.objects.get(profile = self.request.user)
             context['user'] = user
+        except Person.DoesNotExist:
+            pass
         for i in book:
             title = i
                                 
@@ -184,11 +198,15 @@ class AddBookView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
+        i = None
         added_books_count = Person.objects.filter(profile = self.request.user).values_list('added_books_count', flat = True)
         for i in added_books_count:
             i += 1
         
-        update_added_books = Person.objects.filter(profile = self.request.user).update(added_books_count = i)
+        try:
+            update_added_books = Person.objects.filter(profile = self.request.user).update(added_books_count = i)
+        except Person.DoesNotExist: 
+            pass
         return super().form_valid(form)
 
 
@@ -229,53 +247,12 @@ class RemoveSavedBook(LoginRequiredMixin, DeleteView):
     model = SavedBook
     slug_field = 'book__title'
     success_url = reverse_lazy('index')
-    def get_object(self, queryset = None):
-        if queryset is None:
-            queryset = self.get_queryset()
-
-        user = self.request.user
-        book = self.kwargs['slug']
-        queryset = SavedBook.objects.filter(person = user, book__title = book)
-        if not queryset:
-            raise Http404
-        context = {'user':user, 'book':book}
-        return context
-
-    def delete(self, request, *args, **kwargs):
-        user = self.request.user
-        book = self.kwargs['slug']
-        saved_book_delete = SavedBook.objects.filter(person = user, book__title = book)
-        saved_book_delete.delete()
-        return HttpResponseRedirect(reverse('index', ))
     
-
 class RemoveReadBook(LoginRequiredMixin, DeleteView):
     model = AddReadBook
     slug_field = 'title'
     success_url = reverse_lazy('index')
-    def get_object(self, queryset = None):
-        if queryset is None:
-            queryset = self.get_queryset()
 
-        user = self.request.user
-        book = self.kwargs['slug']
-        queryset = AddReadBook.objects.filter(user = user, title = book)
-        if not queryset:
-            raise Http404
-        context = {'user':user, 'book':book}
-        return context
-
-    def delete(self, request, *args, **kwargs):
-        user = self.request.user
-        book = self.kwargs['slug']
-        saved_book_delete = AddReadBook.objects.filter(user = user, title = book)
-        saved_book_delete.delete()
-        read_books_count = Book.objects.values_list('read_book_count', flat=True)
-        for i in read_books_count:
-            i -= 1
-        
-        read_books = Book.objects.filter().update(read_book_count = i)
-        return HttpResponseRedirect(reverse('index', ))
 
 # Searching book
 class Search(ListView):
@@ -362,7 +339,7 @@ class Saved(LoginRequiredMixin, ListView):
         if self.q:
             read_book = AddReadBook.objects.filter(user = self.request.user).values_list('title', flat=True)
             book_q = Book.objects.filter(title__icontains = self.q).values_list('id', flat=True)
-            ss_objects = SavedBook.objects.filter(book__id__in = book_q, person = self.request.user).exclude(book__title__in = self.read_book)
+            ss_objects = SavedBook.objects.filter(book__id__in = book_q, person = self.request.user).exclude(book__title__in = read_book)
             object_list = ss_objects
         
         else:
@@ -395,38 +372,44 @@ class Save(LoginRequiredMixin, CreateView):
 class Publisher(DetailView):
     model = Person
     template_name = 'library_app/profile_publisher.html'
-    slug_field = 'profile'
+    try:
+        slug_field = 'profile'
+    except:
+        raise Http404
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        profile_publisher = Person.objects.filter(profile = self.kwargs['pk'])
-        profile_publisher_get = Person.objects.get(profile = self.kwargs['pk'])
-        check_user = Person.objects.get(profile = self.kwargs['pk'])
+        try:
+            profile_publisher = Person.objects.filter(profile = self.kwargs['pk'])
+            profile_publisher_get = Person.objects.get(profile = self.kwargs['pk'])
+            check_user = Person.objects.get(profile = self.kwargs['pk'])
 
-        profile_publisher_followers = FriendShip.objects.filter(sent_to = profile_publisher_get).count()
-        profile_publisher_following = FriendShip.objects.filter(followed_by = profile_publisher_get).count()
+            profile_publisher_followers = FriendShip.objects.filter(sent_to = profile_publisher_get).count()
+            profile_publisher_following = FriendShip.objects.filter(followed_by = profile_publisher_get).count()
 
 
-        profile_publisher_followers_followed_by = FriendShip.objects.filter(sent_to = profile_publisher_get).exclude(followed_by = None)
-        
-        for follower in profile_publisher_followers_followed_by:
-            follower_query = follower.followed_by
-                
-        if self.request.user == follower_query.profile:
-            context['show'] = True
-        else:
-            context['show'] = False
-        if self.request.user.person:
-            context['has_perm'] = True
-        else:
-            context['has_perm'] = False
-        if self.request.user.person:
-            if self.request.user.person == check_user:
-                context['check_user'] = True 
+            profile_publisher_followers_followed_by = FriendShip.objects.filter(sent_to = profile_publisher_get).exclude(followed_by = None)
+            
+            for follower in profile_publisher_followers_followed_by:
+                follower_query = follower.followed_by
+                    
+            if self.request.user == follower_query.profile:
+                context['show'] = True
             else:
-                context['check_user'] = False
-        context['followers'] = profile_publisher_followers
-        context['following'] = profile_publisher_following
-        context['user_publisher'] = profile_publisher
+                context['show'] = False
+            if self.request.user.person:
+                context['has_perm'] = True
+            else:
+                context['has_perm'] = False
+            if self.request.user.person:
+                if self.request.user.person == check_user:
+                    context['check_user'] = True 
+                else:
+                    context['check_user'] = False
+            context['followers'] = profile_publisher_followers
+            context['following'] = profile_publisher_following
+            context['user_publisher'] = profile_publisher
+        except:
+            raise Http404
         return context
 
 
