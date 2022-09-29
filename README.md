@@ -6,7 +6,7 @@
 
 ## Introduction
 Purpose of Library web site is to help readers find books to read. They can save them, read description and have general info about them. 
-Also they can add their own books. Each user can write description about what they learned by reading specific book.
+Also they can add their own books. Each user can write description about what they learned by reading specific book. Users can follow each other and have their own profile with personal info and reputation.
 
 ## Technologies
 * Python: 3.9
@@ -22,4 +22,4 @@ Also they can add their own books. Each user can write description about what th
 * 4. Go to http://127.0.0.1:8000/home/.
 
 ### Project status
-* Project is still being developed.
+* Project is finished.
